@@ -1,25 +1,50 @@
 package handler
 
 import (
-	"github.com/Moletastic/utem-gsp/utils"
+	"fmt"
+
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func (h *Handler) Register(v1 *echo.Group) {
-	access := v1.Group("/users")
-	access.POST("", h.SignUp)
-	access.POST("/login", h.Login)
+	//config := middleware.JWTConfig{
+	//SigningKey: utils.JWTSecret,
+	//Claims:     &utils.GSPClaim{},
+	//AuthScheme: "Bearer",
+	//}
+	users := v1.Group("/users")
+	users.POST("", h.SignUp)
+	users.POST("/login", h.Login)
 
-	edu := v1.Group("/user")
-	edu.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey: utils.JWTSecret,
-		Claims:     &utils.GSPClaim{},
-		AuthScheme: "Bearer",
-	}))
-	edu.GET("/teacher", h.ListTeachers)
-	edu.POST("/project", h.CreateProject)
-	edu.GET("/project", h.ListProjects)
-	access.POST("/careers", h.CreateCareer)
-	access.GET("/careers", h.ListCareers)
+	restricted := v1.Group("/gsp")
+	//restricted.Use(middleware.JWTWithConfig(config))
+	for _, handler := range h.AccStore.Related {
+		uri := fmt.Sprintf("/%s", handler.Name)
+		uriID := fmt.Sprintf("/%s/:id", handler.Name)
+		restricted.GET(uriID, handler.GetByID)
+		restricted.GET(uri, handler.List)
+		restricted.POST(uri, handler.Create)
+		restricted.PUT(uriID, handler.Update)
+		restricted.DELETE(uriID, handler.Delete)
+	}
+
+	for _, handler := range h.EduStore.Related {
+		uri := fmt.Sprintf("/%s", handler.Name)
+		uriID := fmt.Sprintf("/%s/:id", handler.Name)
+		restricted.GET(uriID, handler.GetByID)
+		restricted.GET(uri, handler.List)
+		restricted.POST(uri, handler.Create)
+		restricted.PUT(uriID, handler.Update)
+		restricted.DELETE(uriID, handler.Delete)
+	}
+
+	for _, handler := range h.ProStore.Related {
+		uri := fmt.Sprintf("/%s", handler.Name)
+		uriID := fmt.Sprintf("/%s/:id", handler.Name)
+		restricted.GET(uriID, handler.GetByID)
+		restricted.GET(uri, handler.List)
+		restricted.POST(uri, handler.Create)
+		restricted.PUT(uriID, handler.Update)
+		restricted.DELETE(uriID, handler.Delete)
+	}
 }

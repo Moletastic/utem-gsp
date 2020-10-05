@@ -8,14 +8,14 @@ import (
 )
 
 type GSPClaim struct {
-	User    models.User `json:"user"`
-	IsAdmin bool        `json:"is_admin"`
+	User    models.ProfiledUser `json:"user"`
+	IsAdmin bool                `json:"is_admin"`
 	jwt.StandardClaims
 }
 
 var JWTSecret = []byte("Secret")
 
-func GenerateJWT(u models.User) string {
+func GenerateJWT(u models.ProfiledUser) string {
 	claims := &GSPClaim{
 		User:    u,
 		IsAdmin: true,

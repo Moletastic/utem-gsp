@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 
-	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,12 +28,12 @@ func (t UType) String() string {
 }
 
 type User struct {
-	gorm.Model
+	GSPModel
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Nick      string `json:"nick"`
 	RUT       string `json:"rut"`
-	Email     string `json:"email" gorm:"unique"`
+	Email     string `json:"email"`
 	Password  string `json:"password"`
 	UserType  string `json:"user_type"`
 }

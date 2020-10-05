@@ -2,16 +2,43 @@ package store
 
 import (
 	"github.com/Moletastic/utem-gsp/models"
+	"github.com/Moletastic/utem-gsp/services"
 	"github.com/jinzhu/gorm"
 )
 
 type AccessStore struct {
-	db *gorm.DB
+	db      *gorm.DB
+	User    *services.CRUDHandler
+	Related []*services.CRUDHandler
 }
 
 func NewAccessStore(db *gorm.DB) *AccessStore {
+	teacher := services.NewCrudService(
+		&models.Teacher{},
+		"access:teacher",
+		[]string{"User"},
+		db,
+	)
+	user := services.NewCRUDHandler("user", services.NewCrudService(
+		&models.User{},
+		"access:user",
+		[]string{},
+		db,
+	))
+	admin := services.NewCrudService(
+		&models.Admin{},
+		"access:admin",
+		[]string{"User"},
+		db,
+	)
+	related := []*services.CRUDHandler{
+		services.NewCRUDHandler("teacher", teacher),
+		services.NewCRUDHandler("admin", admin),
+	}
 	return &AccessStore{
-		db: db,
+		db:      db,
+		Related: related,
+		User:    user,
 	}
 }
 
@@ -49,6 +76,10 @@ func (as *AccessStore) CreateTeacher(t *models.Teacher) (err error) {
 	return as.db.Create(t).Error
 }
 
+func (as *AccessStore) CreateAdmin(a *models.Admin) (err error) {
+	return as.db.Create(a).Error
+}
+
 func (as *AccessStore) GetTeacherByEmail(e string) (*models.Teacher, error) {
 	var t models.Teacher
 	u, err := as.GetByEmail(e)
@@ -66,4 +97,19 @@ func (as *AccessStore) GetTeacherByEmail(e string) (*models.Teacher, error) {
 
 func (as *AccessStore) UpdateTeacher(t *models.Teacher) error {
 	return as.db.Model(t).Update(t).Error
+}
+
+func (as *AccessStore) GetAdminByEmail(e string) (*models.Admin, error) {
+	var a models.Admin
+	u, err := as.GetByEmail(e)
+	if err != nil {
+		return nil, err
+	}
+	if err := as.db.Preload("User").Where("user_id = ?", u.ID).First(&a).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &a, nil
 }

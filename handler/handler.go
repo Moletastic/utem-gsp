@@ -1,67 +1,45 @@
 package handler
 
 import (
-	"net/http"
-
-	"github.com/Moletastic/utem-gsp/models"
 	"github.com/Moletastic/utem-gsp/store"
-	"github.com/Moletastic/utem-gsp/utils"
 	"github.com/labstack/echo/v4"
+	"github.com/mitchellh/mapstructure"
 )
 
 type Handler struct {
-	accessStore store.AccessStore
-	eduStore    store.EducationStore
-	proStore    store.ProjectStore
+	AccStore store.AccessStore
+	EduStore store.EducationStore
+	ProStore store.ProjectStore
+}
+
+// CRUDReq for CreateUpdateReq
+type CRUDReq struct {
+	Data map[string]interface{} `json:"data"`
+}
+
+type DeleteReq struct {
+	Data struct {
+		Entity string `json:"entity"`
+		ID     int    `json:"ID"`
+		UID    string `json:"uid"`
+	} `json:"data"`
 }
 
 func NewHandler(as store.AccessStore, es store.EducationStore, ps store.ProjectStore) *Handler {
 	return &Handler{
-		accessStore: as,
-		eduStore:    es,
-		proStore:    ps,
+		AccStore: as,
+		EduStore: es,
+		ProStore: ps,
 	}
 }
 
-func (h *Handler) ListTeachers(c echo.Context) error {
-	teachers, _, err := h.eduStore.ListTeachers()
+func (h *Handler) DecodeCRUDReq(c echo.Context, req *CRUDReq, data interface{}) error {
+	if err := c.Bind(req); err != nil {
+		return err
+	}
+	err := mapstructure.Decode(req.Data, data)
 	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+		return err
 	}
-	return c.JSON(http.StatusOK, teachers)
-}
-
-func (h *Handler) CreateProject(c echo.Context) error {
-
-	project := models.Project{
-		Title: "project-1",
-		Authors: []*models.Student{
-			{
-				Career: &models.Career{
-					Code: 21041,
-					Name: "Ing civil",
-				},
-				EntryYear: 2010,
-				FirstName: "Yeikeb",
-				LastName:  "Romero",
-				RUT:       "195239525",
-			},
-		},
-		Tags: "vue;golang;rest",
-	}
-	err := h.proStore.CreateProject(&project)
-	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
-	}
-	return c.JSON(http.StatusOK, "")
-}
-
-func (h *Handler) ListProjects(c echo.Context) error {
-	projects, _, err := h.proStore.ListProjects(&store.ListConf{
-		Limit: 2,
-	})
-	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
-	}
-	return c.JSON(http.StatusOK, projects)
+	return nil
 }

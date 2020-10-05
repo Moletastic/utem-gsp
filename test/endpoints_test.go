@@ -11,17 +11,6 @@ import (
 
 func TestUserRegistration(t *testing.T) {
 
-	//form := handler.RegisterForm{
-	//Username: "pepe",
-	//Email:    "boxjack.romero@gmail.com",
-	//Password: "pepe123",
-	//}
-
-	//err := RegisterUser(form)
-	//if err != nil {
-	//t.Error(err)
-	//}
-
 	cr := handler.Credentials{
 		Email:    "boxjack.romero@gmail.com",
 		Password: "pepe123",

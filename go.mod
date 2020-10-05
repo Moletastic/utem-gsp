@@ -13,5 +13,6 @@ require (
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
+	gorm.io/driver/mysql v1.0.1
 	moul.io/http2curl v1.0.0 // indirect
 )
