@@ -6,26 +6,27 @@ import (
 	"os"
 
 	"github.com/Moletastic/utem-gsp/models"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // New creates a new Database connection
 func New() *gorm.DB {
-	db, err := gorm.Open("sqlite3", "./utem-gsp.db")
+	//db, err := gorm.Open("sqlite3", "./utem-gsp.db")
+	db, err := gorm.Open(sqlite.Open("utem-gsp.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		fmt.Println("Error de almacenamiento: ", err)
 	}
-	db.DB().SetMaxIdleConns(3)
-	db.LogMode(true)
 	return db
 }
 
 func NewMySQL() *gorm.DB {
 	dsn := "root:@tcp(localhost:3306)/utem_gsp?charset=utf8mb4&parseTime=true&loc=Local"
-	db, err := gorm.Open("mysql", dsn)
-	db.LogMode(true)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println("Error de almacenamiento: ", err)
 	}
@@ -34,12 +35,12 @@ func NewMySQL() *gorm.DB {
 
 // TestDB creates a new Test Database connection
 func TestDB(path string) (*gorm.DB, error) {
-	db, err := gorm.Open("sqlite3", path)
+	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		return db, err
 	}
-	db.DB().SetMaxIdleConns(3)
-	db.LogMode(true)
 	return db, nil
 }
 
@@ -52,7 +53,7 @@ func DropTestDB() error {
 }
 
 func AutoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(
+	err := db.AutoMigrate(
 		&models.Department{},
 		&models.Career{},
 		&models.User{},
@@ -72,5 +73,6 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.Rubric{},
 		&models.Review{},
 		&models.Project{},
-	).Error
+	)
+	return err
 }

@@ -6,19 +6,21 @@ import (
 	"math/rand"
 	"strconv"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Model interface {
 	InitGSP(t string)
-	GetID() uint
+	GetID() int64
 	GetUID() string
 }
 
 type CommonModel struct {
-	ID        uint       `gorm:"primary_key" mapstructure:"id" json:"id"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at"`
+	ID        int64           `gorm:"primaryKey" mapstructure:"id" json:"id"`
+	CreatedAt time.Time       `json:"created_at"`
+	UpdatedAt time.Time       `json:"updated_at"`
+	DeletedAt *gorm.DeletedAt `json:"deleted_at"`
 }
 
 type GSPModel struct {
@@ -36,7 +38,7 @@ func (gsp *GSPModel) InitGSP(t string) {
 	gsp.IsValid = true
 }
 
-func (gsp *GSPModel) GetID() uint {
+func (gsp *GSPModel) GetID() int64 {
 	return gsp.ID
 }
 

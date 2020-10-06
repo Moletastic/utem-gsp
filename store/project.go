@@ -3,7 +3,7 @@ package store
 import (
 	"github.com/Moletastic/utem-gsp/models"
 	"github.com/Moletastic/utem-gsp/services"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type ProjectStore struct {
@@ -107,17 +107,17 @@ func NewProjectStore(db *gorm.DB) *ProjectStore {
 		db,
 	)
 	related := []*services.CRUDHandler{
-		services.NewCRUDHandler("project", project),
-		services.NewCRUDHandler("commit", commit),
-		services.NewCRUDHandler("meet", meet),
-		services.NewCRUDHandler("milestone", milestone),
-		services.NewCRUDHandler("subject", subject),
-		services.NewCRUDHandler("progress", progress),
-		services.NewCRUDHandler("channel", channel),
-		services.NewCRUDHandler("link", link),
-		services.NewCRUDHandler("linktype", linktype),
-		services.NewCRUDHandler("rubric", rubric),
-		services.NewCRUDHandler("review", review),
+		services.NewCRUDHandler("project", project),     //0
+		services.NewCRUDHandler("commit", commit),       // 1
+		services.NewCRUDHandler("meet", meet),           // 2
+		services.NewCRUDHandler("milestone", milestone), // 3
+		services.NewCRUDHandler("subject", subject),     // 4
+		services.NewCRUDHandler("progress", progress),   // 5
+		services.NewCRUDHandler("channel", channel),     // 6
+		services.NewCRUDHandler("link", link),           // 7
+		services.NewCRUDHandler("linktype", linktype),   // 8
+		services.NewCRUDHandler("rubric", rubric),       // 9
+		services.NewCRUDHandler("review", review),       // 10
 		services.NewCRUDHandler("ptype", ptype),
 		services.NewCRUDHandler("pstate", pstate),
 	}

@@ -10,26 +10,25 @@ type Department struct {
 // Career has many students and one Department associated
 type Career struct {
 	GSPModel
-	Code         uint        `json:"code" mapstructure:"code" gorm:"unique"`
+	Code         int64       `json:"code" mapstructure:"code" gorm:"unique"`
 	Name         string      `json:"name" mapstructure:"name"`
 	Department   *Department `json:"department,omitempty" mapstructure:"department" gorm:"foreignKey:DepartmentID"`
-	DepartmentID uint        `json:"department_id,omitempty" mapstructure:"department_id" gorm:"column:department_id"`
+	DepartmentID int64       `json:"department_id,omitempty" mapstructure:"department_id" gorm:"column:department_id"`
 	Students     []Student   `json:"students" mapstructure:"students" gorm:"->"`
 }
 
 // Student has one associated Career
 type Student struct {
 	GSPModel
-	FirstName string    `mapstructure:"first_name" json:"first_name"`
-	LastName  string    `mapstructure:"last_name" json:"last_name"`
-	RUT       string    `mapstructure:"rut" json:"rut"`
-	CareerID  uint      `mapstructure:"career_id" json:"career_id"`
-	Career    *Career   `mapstructure:"career" json:"career" gorm:"->"`
-	EntryYear int       `mapstructure:"entry_year" json:"entry_year"`
-	Projects  []Project `mapstructure:"projects" json:"projects"`
+	FirstName string  `mapstructure:"first_name" json:"first_name"`
+	LastName  string  `mapstructure:"last_name" json:"last_name"`
+	RUT       string  `mapstructure:"rut" json:"rut"`
+	CareerID  int64   `mapstructure:"career_id" json:"career_id"`
+	Career    *Career `mapstructure:"career" json:"career" gorm:"->"`
+	EntryYear int     `mapstructure:"entry_year" json:"entry_year"`
 }
 
-func NewStudent(f string, l string, cid uint) Student {
+func NewStudent(f string, l string, cid int64) Student {
 	s := Student{
 		FirstName: f,
 		LastName:  l,

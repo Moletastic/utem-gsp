@@ -1,9 +1,11 @@
 package store
 
 import (
+	"errors"
+
 	"github.com/Moletastic/utem-gsp/models"
 	"github.com/Moletastic/utem-gsp/services"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type AccessStore struct {
@@ -45,7 +47,7 @@ func NewAccessStore(db *gorm.DB) *AccessStore {
 func (as *AccessStore) GetByID(id uint) (*models.User, error) {
 	var m models.User
 	if err := as.db.First(&m, id).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -56,7 +58,7 @@ func (as *AccessStore) GetByID(id uint) (*models.User, error) {
 func (as *AccessStore) GetByEmail(e string) (*models.User, error) {
 	var m models.User
 	if err := as.db.Where(&models.User{Email: e}).First(&m).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -69,7 +71,7 @@ func (as *AccessStore) Create(u *models.User) (err error) {
 }
 
 func (as *AccessStore) Update(u *models.User) error {
-	return as.db.Model(u).Update(u).Error
+	return as.db.Model(u).Save(u).Error
 }
 
 func (as *AccessStore) CreateTeacher(t *models.Teacher) (err error) {
@@ -87,7 +89,7 @@ func (as *AccessStore) GetTeacherByEmail(e string) (*models.Teacher, error) {
 		return nil, err
 	}
 	if err := as.db.Preload("User").Where("user_id = ?", u.ID).First(&t).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -96,7 +98,7 @@ func (as *AccessStore) GetTeacherByEmail(e string) (*models.Teacher, error) {
 }
 
 func (as *AccessStore) UpdateTeacher(t *models.Teacher) error {
-	return as.db.Model(t).Update(t).Error
+	return as.db.Model(t).Save(t).Error
 }
 
 func (as *AccessStore) GetAdminByEmail(e string) (*models.Admin, error) {
@@ -106,7 +108,7 @@ func (as *AccessStore) GetAdminByEmail(e string) (*models.Admin, error) {
 		return nil, err
 	}
 	if err := as.db.Preload("User").Where("user_id = ?", u.ID).First(&a).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err

@@ -1,12 +1,12 @@
 package models
 
 type IProfile interface {
-	GetID() uint
+	GetID() int64
 }
 
 type TeacherProfile struct {
-	ID        uint `json:"id"`
-	EntryYear int  `json:"entry_year"`
+	ID        int64 `json:"id"`
+	EntryYear int   `json:"entry_year"`
 }
 
 func NewTeacherProfile(t *Teacher) TeacherProfile {
@@ -17,13 +17,13 @@ func NewTeacherProfile(t *Teacher) TeacherProfile {
 	return p
 }
 
-func (p *TeacherProfile) GetID() uint {
+func (p *TeacherProfile) GetID() int64 {
 	return p.ID
 }
 
 type AdminProfile struct {
-	ID        uint `json:"id"`
-	EntryYear int  `json:"entry_year"`
+	ID        int64 `json:"id"`
+	EntryYear int   `json:"entry_year"`
 }
 
 func NewAdminProfile(a *Admin) AdminProfile {
@@ -34,7 +34,7 @@ func NewAdminProfile(a *Admin) AdminProfile {
 	return p
 }
 
-func (p *AdminProfile) GetID() uint {
+func (p *AdminProfile) GetID() int64 {
 	return p.ID
 }
 

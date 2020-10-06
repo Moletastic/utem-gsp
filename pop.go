@@ -7,7 +7,7 @@ import (
 	"github.com/Moletastic/utem-gsp/models"
 	"github.com/Moletastic/utem-gsp/services"
 	"github.com/Moletastic/utem-gsp/store"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func pop(d *gorm.DB) error {
@@ -39,11 +39,11 @@ func pop(d *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	ltypes, err := generateLinkTypes(pro.Related[0].Service)
+	ltypes, err := generateLinkTypes(pro.Related[8].Service)
 	if err != nil {
 		return err
 	}
-	chs, err := generateChannels(pro.Related[8].Service)
+	chs, err := generateChannels(pro.Related[6].Service)
 	projects, err := generateProjects(pro.Project, students, teachers, subjects, types, states)
 
 	if err != nil {

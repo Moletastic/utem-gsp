@@ -1,10 +1,11 @@
 package services
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/Moletastic/utem-gsp/models"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type ListParams struct {
@@ -14,11 +15,11 @@ type ListParams struct {
 
 type ICRUDService interface {
 	Create(interface{}) error
-	Update(interface{}, uint) error
-	Delete(interface{}, uint) error
-	GetAll() (interface{}, uint, error)
-	List(l ListParams) (interface{}, uint, error)
-	GetByID(uint, interface{}) error
+	Update(interface{}, int64) error
+	Delete(interface{}, int64) error
+	GetAll() (interface{}, int64, error)
+	List(l ListParams) (interface{}, int64, error)
+	GetByID(int64, interface{}) error
 	GetByUID(string, interface{}) error
 }
 
@@ -42,19 +43,23 @@ func NewCrudService(model models.Model, entity string, preloads []string, d *gor
 }
 
 func (cs *CRUDService) Create(obj interface{}) error {
-	return cs.db.Create(obj).Error
+	db := cs.db
+	err := db.Create(obj).Error
+	return err
 }
 
-func (cs *CRUDService) Update(obj interface{}, id uint) error {
-	return cs.db.Where("id = ?", id).Update(obj).Error
+func (cs *CRUDService) Update(obj interface{}, id int64) error {
+	db := cs.db
+	return db.Save(obj).Where("id = ?", id).Error
 }
 
-func (cs *CRUDService) Delete(obj interface{}, id uint) error {
-	return cs.db.Where("id = ?", id).Delete(obj).Error
+func (cs *CRUDService) Delete(obj interface{}, id int64) error {
+	db := cs.db
+	return db.Where("id = ?", id).Delete(obj).Error
 }
 
-func (cs *CRUDService) GetAll() (interface{}, uint, error) {
-	var count uint
+func (cs *CRUDService) GetAll() (interface{}, int64, error) {
+	var count int64
 	db := cs.preload().Count(&count)
 	err := db.Find(cs.Results).Error
 	if err != nil {
@@ -73,7 +78,7 @@ func (cs *CRUDService) preload() *gorm.DB {
 	return db
 }
 
-func (cs *CRUDService) GetByID(id uint, item interface{}) error {
+func (cs *CRUDService) GetByID(id int64, item interface{}) error {
 	db := cs.preload()
 	return db.Where("id = ?", id).First(item).Error
 }
@@ -83,8 +88,8 @@ func (cs *CRUDService) GetByUID(uid string, item interface{}) error {
 	return db.Where("uid = ?", uid).First(item).Error
 }
 
-func (cs *CRUDService) List(l *ListParams) (interface{}, uint, error) {
-	var count uint
+func (cs *CRUDService) List(l *ListParams) (interface{}, int64, error) {
+	var count int64
 	db := cs.preload().Count(&count)
 	var err error
 	if l == nil {

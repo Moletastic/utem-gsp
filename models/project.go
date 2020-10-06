@@ -6,9 +6,8 @@ import (
 
 type LinkType struct {
 	GSPModel
-	Name  string `mapstructure:"name" json:"name"`
-	Icon  string `mapstructure:"icon" json:"icon"`
-	Links []Link `mapstructure:"link" json:"link"`
+	Name string `mapstructure:"name" json:"name"`
+	Icon string `mapstructure:"icon" json:"icon"`
 }
 
 func NewLinkType(n string, i string) LinkType {
@@ -23,13 +22,13 @@ func NewLinkType(n string, i string) LinkType {
 type Link struct {
 	GSPModel
 	URL        string   `mapstructure:"url" json:"url"`
-	LinkTypeID uint     `mapstructure:"link_type_id" json:"link_type_id"`
+	LinkTypeID int64    `mapstructure:"link_type_id" json:"link_type_id"`
 	LinkType   LinkType `mapstructure:"link_type" json:"link_type"`
 	Project    Project  `mapstructure:"project" json:"project" gorm:"foreignKey:ProjectID"`
-	ProjectID  uint     `mapstructure:"project_id" json:"project_id,omitempty" gorm:"column:project_id"`
+	ProjectID  int64    `mapstructure:"project_id" json:"project_id,omitempty" gorm:"column:project_id"`
 }
 
-func NewLink(url string, tid uint, pid uint) Link {
+func NewLink(url string, tid int64, pid int64) Link {
 	l := Link{
 		URL:        url,
 		LinkTypeID: tid,
@@ -41,9 +40,8 @@ func NewLink(url string, tid uint, pid uint) Link {
 
 type Subject struct {
 	GSPModel
-	Name     string    `json:"name" mapstructure:"name"`
-	Icon     string    `json:"icon" mapstructure:"icon"`
-	Projects []Project `gorm:"many2many:project_subjects" json:"projects" mapstructure:"projects"`
+	Name string `json:"name" mapstructure:"name"`
+	Icon string `json:"icon" mapstructure:"icon"`
 }
 
 func NewSubject(n string, i string) Subject {
@@ -78,14 +76,14 @@ type Meet struct {
 	GSPModel
 	Name      string    `mapstructure:"name" json:"name"`
 	Date      time.Time `mapstructure:"date" json:"date"`
-	ChannelID uint      `mapstructure:"channel_id" json:"channel_id"`
+	ChannelID int64     `mapstructure:"channel_id" json:"channel_id"`
 	Channel   *Channel  `mapstructure:"channel" json:"channel"`
 	Done      bool      `mapstructure:"done" json:"done"`
 	Project   Project   `mapstructure:"project" json:"project"`
-	ProjectID uint      `mapstructure:"project_id" json:"project_id"`
+	ProjectID int64     `mapstructure:"project_id" json:"project_id"`
 }
 
-func NewMeet(n string, d time.Time, chid uint, pid uint) Meet {
+func NewMeet(n string, d time.Time, chid int64, pid int64) Meet {
 	m := Meet{
 		Name:      n,
 		Date:      d,
@@ -104,10 +102,10 @@ type Commit struct {
 	SolvedAt  *time.Time `json:"solved_at,omitempty" mapstructure:"solved_at"`
 	LimitDate *time.Time `json:"limit_date" mapstructure:"limit_date"`
 	Project   Project    `json:"project" mapstructure:"project"`
-	ProjectID uint       `json:"project_id" mapstructure:"project_id"`
+	ProjectID int64      `json:"project_id" mapstructure:"project_id"`
 }
 
-func NewCommit(t string, limit time.Time, pid uint) Commit {
+func NewCommit(t string, limit time.Time, pid int64) Commit {
 	c := Commit{
 		Title:     t,
 		LimitDate: &limit,
@@ -126,10 +124,10 @@ type Milestone struct {
 	Solved    bool      `json:"solved" mapstructure:"solved"`
 	Date      time.Time `json:"date" mapstructure:"date"`
 	Project   Project   `json:"project" mapstructure:"project"`
-	ProjectID uint      `json:"project_id" mapstructure:"project_id"`
+	ProjectID int64     `json:"project_id" mapstructure:"project_id"`
 }
 
-func NewMilestone(t string, d time.Time, pid uint) Milestone {
+func NewMilestone(t string, d time.Time, pid int64) Milestone {
 	m := Milestone{
 		Title:     t,
 		Date:      d,
@@ -143,10 +141,10 @@ type Progress struct {
 	GSPModel
 	Name      string  `json:"name" mapstructure:"name"`
 	Project   Project `json:"project" mapstructure:"project"`
-	ProjectID uint    `json:"project_id" mapstructure:"project_id"`
+	ProjectID int64   `json:"project_id" mapstructure:"project_id"`
 }
 
-func NewProgress(n string, pid uint) Progress {
+func NewProgress(n string, pid int64) Progress {
 	p := Progress{
 		Name:      n,
 		ProjectID: pid,
@@ -157,8 +155,7 @@ func NewProgress(n string, pid uint) Progress {
 
 type ProjectState struct {
 	GSPModel
-	Name     string    `json:"name" mapstructure:"name"`
-	Projects []Project `json:"projects" mapstructure:"projects"`
+	Name string `json:"name" mapstructure:"name"`
 }
 
 func NewProjectState(n string) ProjectState {
@@ -202,18 +199,18 @@ func NewRubric(n string, url string) Rubric {
 type Review struct {
 	GSPModel
 	Name      string  `mapstructure:"name" json:"name"`
-	RubricID  uint    `json:"rubric_id" mapstructure:"rubric_id"`
+	RubricID  int64   `json:"rubric_id" mapstructure:"rubric_id"`
 	Rubric    Rubric  `mapstructure:"rubric" json:"rubric"`
 	Project   Project `json:"project" mapstructure:"project"`
-	ProjectID uint    `json:"project_id" mapstructure:"project_id"`
+	ProjectID int64   `json:"project_id" mapstructure:"project_id"`
 	FileURL   string  `mapstructure:"file_url" json:"file_url"`
 	// JSON String
 	Score      string  `mapstructure:"score" json:"score"`
-	ReviewerID uint    `json:"reviewer_id" mapstructure:"reviewer_id"`
+	ReviewerID int64   `json:"reviewer_id" mapstructure:"reviewer_id"`
 	Reviewer   Teacher `mapstructure:"reviewer" json:"reviewer"`
 }
 
-func NewReview(n string, rid uint, pid uint, url string, rvid uint, score string) Review {
+func NewReview(n string, rid int64, pid int64, url string, rvid int64, score string) Review {
 	r := Review{
 		Name:       n,
 		RubricID:   rid,
@@ -229,14 +226,14 @@ func NewReview(n string, rid uint, pid uint, url string, rvid uint, score string
 type Project struct {
 	GSPModel
 	ProjectState   ProjectState `gorm:"foreignKey:ProjectStateID" json:"project_state" mapstructure:"project_state"`
-	ProjectStateID uint         `gorm:"column:project_state_id" json:"project_state_id,omitempty" mapstructure:"project_state_id"`
+	ProjectStateID int64        `gorm:"column:project_state_id" json:"project_state_id,omitempty" mapstructure:"project_state_id"`
 	Title          string       `json:"title" mapstructure:"title"`
-	ProjectTypeID  uint         `json:"project_type_id" mapstructure:"project_type_id"`
+	ProjectTypeID  int64        `json:"project_type_id" mapstructure:"project_type_id"`
 	ProjectType    ProjectType  `json:"project_type" mapstructure:"project_type"`
 	Desc           string       `json:"desc" mapstructure:"desc"`
-	Authors        []Student    `gorm:"many2many:project_authors" json:"authors" mapstructure:"authors"`
+	Authors        []Student    `gorm:"many2many:project_authors;" json:"authors" mapstructure:"authors"`
 	Guides         []Teacher    `gorm:"many2many:project_guides" json:"guides" mapstructure:"guides"`
-	Links          []Link       `gorm:"->" json:"links" mapstructure:"links"`
+	Links          []Link       `json:"links" mapstructure:"links"`
 	Subjects       []Subject    `gorm:"many2many:project_subjects" json:"subjects" mapstructure:"subjects"`
 	Meets          []Meet       `json:"meets" mapstructure:"meets"`
 	Milestones     []Milestone  `json:"milestones" mapstructure:"milestones"`

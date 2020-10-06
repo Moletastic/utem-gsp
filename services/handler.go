@@ -73,7 +73,7 @@ func (crud *CRUDHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
 	obj.InitGSP(crud.Service.Entity)
-	err = crud.Service.Update(obj, uint(id))
+	err = crud.Service.Update(obj, int64(id))
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
@@ -88,7 +88,7 @@ func (crud *CRUDHandler) Delete(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	err = crud.Service.Delete(obj, uint(id))
+	err = crud.Service.Delete(obj, int64(id))
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
@@ -98,7 +98,7 @@ func (crud *CRUDHandler) Delete(c echo.Context) error {
 func (crud *CRUDHandler) GetByID(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	obj := crud.Service.Model
-	err := crud.Service.GetByID(uint(id), obj)
+	err := crud.Service.GetByID(int64(id), obj)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}

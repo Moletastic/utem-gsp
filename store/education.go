@@ -3,7 +3,7 @@ package store
 import (
 	"github.com/Moletastic/utem-gsp/models"
 	"github.com/Moletastic/utem-gsp/services"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type EducationStore struct {

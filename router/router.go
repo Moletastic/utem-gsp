@@ -9,9 +9,9 @@ import (
 func New() *echo.Echo {
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "[${method}] ${status} ${uri}\n",
-	}))
+	//e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+	//Format: "[${method}] ${status} ${uri}\n",
+	//}))
 	e.HideBanner = true
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		// Change after ...

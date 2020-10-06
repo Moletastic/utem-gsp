@@ -9,6 +9,9 @@ test:
 build:
 	go build .
 
+copy:
+	cp utem-gsp.db utem-gsp-test.db
+
 clear:
 	rm utem-gsp
 

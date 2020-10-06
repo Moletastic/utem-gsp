@@ -8,10 +8,9 @@ import (
 // Teacher is a DBModel for Teacher Entity
 type Teacher struct {
 	GSPModel
-	UserID    uint      `json:"user_id" mapstructure:"user_id"`
-	User      User      `json:"user" mapstructure:"user"`
-	EntryYear int       `json:"entry_year" mapstructure:"entry_year"`
-	Projects  []Project `gorm:"many2many:project_guides" json:"projects" mapstructure:"projects"`
+	UserID    int64 `json:"user_id" mapstructure:"user_id"`
+	User      User  `json:"user" mapstructure:"user"`
+	EntryYear int   `json:"entry_year" mapstructure:"entry_year"`
 }
 
 func NewTeacher(f string, l string) Teacher {
@@ -34,15 +33,15 @@ func NewTeacher(f string, l string) Teacher {
 // Coordinator is a DBModel for Coordinator Entity
 type Coordinator struct {
 	GSPModel
-	UserID    uint `json:"user_id" mapstructure:"user_id"`
-	User      User `json:"user" mapstructure:"user"`
-	EntryYear int  `json:"entry_year" mapstructure:"entry_year"`
+	UserID    int64 `json:"user_id" mapstructure:"user_id"`
+	User      User  `json:"user" mapstructure:"user"`
+	EntryYear int   `json:"entry_year" mapstructure:"entry_year"`
 }
 
 // Admin is a DBModel for Admin Entity
 type Admin struct {
 	GSPModel
-	UserID    uint `json:"user_id" mapstructure:"user_id"`
-	User      User `json:"user" mapstructure:"user"`
-	EntryYear int  `json:"entry_year" mapstructure:"entry_year"`
+	UserID    int64 `json:"user_id" mapstructure:"user_id"`
+	User      User  `json:"user" mapstructure:"user"`
+	EntryYear int   `json:"entry_year" mapstructure:"entry_year"`
 }
