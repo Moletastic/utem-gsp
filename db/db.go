@@ -1,55 +1,54 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 
-	"os"
-
+	"github.com/Moletastic/utem-gsp/config"
 	"github.com/Moletastic/utem-gsp/models"
-	"gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-// New creates a new Database connection
-func New() *gorm.DB {
-	//db, err := gorm.Open("sqlite3", "./utem-gsp.db")
-	db, err := gorm.Open(sqlite.Open("utem-gsp.db"), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
-	if err != nil {
-		fmt.Println("Error de almacenamiento: ", err)
+func NewDB(dbconfig *config.DBConfig) (*gorm.DB, error) {
+	db := new(gorm.DB)
+	switch dbconfig.Engine {
+	case "sqlite":
+		if dbconfig.Refresh {
+			err := refreshSQLite(*dbconfig)
+			if err != nil {
+				return nil, err
+			}
+		}
+		sqlite, err := NewSQLite(*dbconfig)
+		if err != nil {
+			return nil, err
+		}
+		db = sqlite
+	case "mysql":
+		if dbconfig.Refresh {
+			err := refreshMySQL(*dbconfig)
+			if err != nil {
+				return nil, err
+			}
+		}
+		mysql, err := NewMySQL(*dbconfig)
+		if err != nil {
+			return nil, err
+		}
+		db = mysql
+	default:
+		message := fmt.Sprintf("Unsupported engine: %s", dbconfig.Engine)
+		return nil, errors.New(message)
 	}
-	return db
-}
-
-func NewMySQL() *gorm.DB {
-	dsn := "root:@tcp(localhost:3306)/utem_gsp?charset=utf8mb4&parseTime=true&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		fmt.Println("Error de almacenamiento: ", err)
-	}
-	return db
-}
-
-// TestDB creates a new Test Database connection
-func TestDB(path string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
-	if err != nil {
-		return db, err
+	if dbconfig.Refresh {
+		err := AutoMigrate(db)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return db, nil
-}
-
-// DropTestDB removes test database file
-func DropTestDB() error {
-	if err := os.Remove("./utem-gsp-test.db"); err != nil {
-		return err
-	}
-	return nil
 }
 
 func AutoMigrate(db *gorm.DB) error {
@@ -73,6 +72,6 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.Rubric{},
 		&models.Review{},
 		&models.Project{},
-	)
+	).Error
 	return err
 }

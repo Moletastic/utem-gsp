@@ -14,6 +14,7 @@ type Model interface {
 	InitGSP(t string)
 	GetID() int64
 	GetUID() string
+	SetID(id int64)
 }
 
 type CommonModel struct {
@@ -40,6 +41,10 @@ func (gsp *GSPModel) InitGSP(t string) {
 
 func (gsp *GSPModel) GetID() int64 {
 	return gsp.ID
+}
+
+func (gsp *GSPModel) SetID(id int64) {
+	gsp.ID = id
 }
 
 func (gsp *GSPModel) GetUID() string {

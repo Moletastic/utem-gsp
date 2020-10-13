@@ -7,7 +7,7 @@ import (
 	"github.com/Moletastic/utem-gsp/models"
 	"github.com/Moletastic/utem-gsp/services"
 	"github.com/Moletastic/utem-gsp/store"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
 )
 
 func pop(d *gorm.DB) error {

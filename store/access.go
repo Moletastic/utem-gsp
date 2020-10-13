@@ -5,7 +5,7 @@ import (
 
 	"github.com/Moletastic/utem-gsp/models"
 	"github.com/Moletastic/utem-gsp/services"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
 )
 
 type AccessStore struct {

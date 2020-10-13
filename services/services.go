@@ -1,11 +1,10 @@
 package services
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/Moletastic/utem-gsp/models"
-	"gorm.io/gorm"
+	"github.com/jinzhu/gorm"
 )
 
 type ListParams struct {
@@ -42,6 +41,11 @@ func NewCrudService(model models.Model, entity string, preloads []string, d *gor
 	return cs
 }
 
+func (s *CRUDService) GetModel() models.Model {
+	model := s.Model
+	return model
+}
+
 func (cs *CRUDService) Create(obj interface{}) error {
 	db := cs.db
 	err := db.Create(obj).Error
@@ -50,7 +54,7 @@ func (cs *CRUDService) Create(obj interface{}) error {
 
 func (cs *CRUDService) Update(obj interface{}, id int64) error {
 	db := cs.db
-	return db.Save(obj).Where("id = ?", id).Error
+	return db.Where("id = ?", id).Update(obj).Error
 }
 
 func (cs *CRUDService) Delete(obj interface{}, id int64) error {

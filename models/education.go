@@ -3,7 +3,7 @@ package models
 // Department embeds multiple careers
 type Department struct {
 	GSPModel
-	Name    string   `json:"name" mapstructure:"name" gorm:"unique"`
+	Name    string   `json:"name" mapstructure:"name"`
 	Careers []Career `json:"careers" gorm:"->"`
 }
 

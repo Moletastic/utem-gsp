@@ -16,3 +16,7 @@ func Pretty(i interface{}) string {
 	s, _ := json.MarshalIndent(i, "", "  ")
 	return string(s)
 }
+
+func GetLocalAddress(port uint) string {
+	return fmt.Sprintf("127.0.0.1:%d", port)
+}

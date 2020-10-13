@@ -13,7 +13,7 @@ type GSPClaim struct {
 	jwt.StandardClaims
 }
 
-var JWTSecret = []byte("Secret")
+var JWTSecret = []byte("chester")
 
 func GenerateJWT(u models.ProfiledUser) string {
 	claims := &GSPClaim{
