@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"reflect"
 	"strconv"
 	"time"
 
@@ -14,6 +15,7 @@ type Model interface {
 	InitGSP(t string)
 	GetID() int64
 	GetUID() string
+	Clear()
 	SetID(id int64)
 }
 
@@ -29,6 +31,15 @@ type GSPModel struct {
 	Entity  string `mapstructure:"entity" json:"entity"`
 	UID     string `json:"uid" mapstructure:"uid"`
 	IsValid bool   `json:"is_valid" gorm:"default:1"`
+}
+
+func (gsp *GSPModel) Clear() {
+	p := reflect.ValueOf(gsp).Elem()
+	p.Set(reflect.Zero(p.Type()))
+}
+
+func (gsp *GSPModel) New() *GSPModel {
+	return &GSPModel{}
 }
 
 // InitGSP initialize an GSPStructure

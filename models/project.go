@@ -10,6 +10,10 @@ type LinkType struct {
 	Icon string `mapstructure:"icon" json:"icon"`
 }
 
+func (l *LinkType) New() *LinkType {
+	return &LinkType{}
+}
+
 func NewLinkType(n string, i string) LinkType {
 	lt := LinkType{
 		Name: n,
@@ -28,6 +32,10 @@ type Link struct {
 	ProjectID  int64    `mapstructure:"project_id" json:"project_id,omitempty" gorm:"column:project_id"`
 }
 
+func (l *Link) New() *Link {
+	return &Link{}
+}
+
 func NewLink(url string, tid int64, pid int64) Link {
 	l := Link{
 		URL:        url,
@@ -42,6 +50,10 @@ type Subject struct {
 	GSPModel
 	Name string `json:"name" mapstructure:"name"`
 	Icon string `json:"icon" mapstructure:"icon"`
+}
+
+func (s *Subject) New() *Subject {
+	return &Subject{}
 }
 
 func NewSubject(n string, i string) Subject {
@@ -60,6 +72,10 @@ type Channel struct {
 	URL      string `mapstructure:"url" json:"url"`
 	IsOnline bool   `mapstructure:"is_online" json:"is_online"`
 	Meets    []Meet `mapstructure:"meets" json:"meets"`
+}
+
+func (c *Channel) New() *Channel {
+	return &Channel{}
 }
 
 func NewChannel(n string, i string, online bool) Channel {
@@ -81,6 +97,10 @@ type Meet struct {
 	Done      bool      `mapstructure:"done" json:"done"`
 	Project   Project   `mapstructure:"project" json:"project"`
 	ProjectID int64     `mapstructure:"project_id" json:"project_id"`
+}
+
+func (m *Meet) New() *Meet {
+	return &Meet{}
 }
 
 func NewMeet(n string, d time.Time, chid int64, pid int64) Meet {
@@ -105,6 +125,10 @@ type Commit struct {
 	ProjectID int64      `json:"project_id" mapstructure:"project_id"`
 }
 
+func (c *Commit) New() *Commit {
+	return &Commit{}
+}
+
 func NewCommit(t string, limit time.Time, pid int64) Commit {
 	c := Commit{
 		Title:     t,
@@ -125,6 +149,10 @@ type Milestone struct {
 	Date      time.Time `json:"date" mapstructure:"date"`
 	Project   Project   `json:"project" mapstructure:"project"`
 	ProjectID int64     `json:"project_id" mapstructure:"project_id"`
+}
+
+func (m *Milestone) New() *Milestone {
+	return &Milestone{}
 }
 
 func NewMilestone(t string, d time.Time, pid int64) Milestone {

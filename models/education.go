@@ -20,12 +20,13 @@ type Career struct {
 // Student has one associated Career
 type Student struct {
 	GSPModel
-	FirstName string  `mapstructure:"first_name" json:"first_name"`
-	LastName  string  `mapstructure:"last_name" json:"last_name"`
-	RUT       string  `mapstructure:"rut" json:"rut"`
-	CareerID  int64   `mapstructure:"career_id" json:"career_id"`
-	Career    *Career `mapstructure:"career" json:"career" gorm:"->"`
-	EntryYear int     `mapstructure:"entry_year" json:"entry_year"`
+	FirstName string    `mapstructure:"first_name" json:"first_name"`
+	LastName  string    `mapstructure:"last_name" json:"last_name"`
+	RUT       string    `mapstructure:"rut" json:"rut"`
+	CareerID  int64     `mapstructure:"career_id" json:"career_id"`
+	Career    *Career   `mapstructure:"career" json:"career" gorm:"->"`
+	EntryYear int       `mapstructure:"entry_year" json:"entry_year"`
+	Projects  []Project `json:"projects" mapstructure:"projects" gorm:"many2many:project_authors;"`
 }
 
 func NewStudent(f string, l string, cid int64) Student {

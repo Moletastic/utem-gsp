@@ -21,7 +21,6 @@ func NewLogFile() (*os.File, error) {
 func New() *echo.Echo {
 	e := echo.New()
 	logconfig := middleware.LoggerConfig{}
-	logconfig.Format = "[${time_rfc3339_nano}] [${method}] ${status} ${uri}\n"
 	log, err := NewLogFile()
 	if err != nil {
 		fmt.Println("Cannot create log file. Ignoring")

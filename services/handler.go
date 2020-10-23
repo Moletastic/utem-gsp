@@ -1,14 +1,12 @@
 package services
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/Moletastic/utem-gsp/models"
+	"github.com/Moletastic/utem-gsp/decoder"
 	"github.com/Moletastic/utem-gsp/utils"
 	"github.com/labstack/echo/v4"
-	"github.com/mitchellh/mapstructure"
 )
 
 // CUReq for CreateUpdateReq
@@ -31,6 +29,7 @@ type ICRUDHandler interface {
 type CRUDHandler struct {
 	Service *CRUDService
 	Name    string
+	decoder *decoder.GSPDecoder
 }
 
 func NewCRUDHandler(n string, s *CRUDService) *CRUDHandler {
@@ -44,7 +43,11 @@ func (crud *CRUDHandler) decodeReq(c echo.Context, req *CRUDReq, data interface{
 	if err := c.Bind(req); err != nil {
 		return err
 	}
-	err := mapstructure.Decode(req.Data, data)
+	d, err := decoder.NewDecoder(data)
+	if err != nil {
+		return nil
+	}
+	err = d.Decode(req.Data)
 	if err != nil {
 		return err
 	}
@@ -109,23 +112,21 @@ func (crud *CRUDHandler) Delete(c echo.Context) error {
 }
 
 func (crud *CRUDHandler) GetByID(c echo.Context) error {
-	var obj models.Model
-	id, _ := strconv.Atoi(c.Param("id"))
-	obj = crud.Service.GetModel()
-	obj.SetID(0)
-	c.Logger().Debug(obj.GetID())
-	err := crud.Service.GetByID(int64(id), obj)
+	idstr, _ := strconv.Atoi(c.Param("id"))
+	id := int64(idstr)
+	obj := crud.Service.GetModel()
+	foo := obj
+	c.Logger().Info(foo)
+	err := crud.Service.GetByID(id, foo)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	obj.SetID(int64(id))
-	return c.JSON(http.StatusOK, obj)
+	return c.JSON(http.StatusOK, foo)
 }
 
 func (crud *CRUDHandler) List(c echo.Context) error {
 	req := new(ListReq)
 	crud.decodeListReq(c, req)
-	fmt.Println(req)
 	list, _, err := crud.Service.List(&req.Params)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))

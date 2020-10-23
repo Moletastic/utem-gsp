@@ -8,9 +8,10 @@ import (
 // Teacher is a DBModel for Teacher Entity
 type Teacher struct {
 	GSPModel
-	UserID    int64 `json:"user_id" mapstructure:"user_id"`
-	User      User  `json:"user" mapstructure:"user"`
-	EntryYear int   `json:"entry_year" mapstructure:"entry_year"`
+	UserID    int64     `json:"user_id" mapstructure:"user_id"`
+	User      User      `json:"user" mapstructure:"user"`
+	EntryYear int       `json:"entry_year" mapstructure:"entry_year"`
+	Projects  []Project `json:"projects" mapstructure:"projects"`
 }
 
 func NewTeacher(f string, l string) Teacher {

@@ -18,5 +18,5 @@ func Pretty(i interface{}) string {
 }
 
 func GetLocalAddress(port uint) string {
-	return fmt.Sprintf("127.0.0.1:%d", port)
+	return fmt.Sprintf(":%d", port)
 }

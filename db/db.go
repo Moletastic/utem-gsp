@@ -28,10 +28,11 @@ func NewDB(dbconfig *config.DBConfig) (*gorm.DB, error) {
 		db = sqlite
 	case "mysql":
 		if dbconfig.Refresh {
-			err := refreshMySQL(*dbconfig)
-			if err != nil {
-				return nil, err
-			}
+			fmt.Println("Not implemented yet")
+			//err := refreshMySQL(*dbconfig)
+			//if err != nil {
+			//return nil, err
+			//}
 		}
 		mysql, err := NewMySQL(*dbconfig)
 		if err != nil {
@@ -48,11 +49,13 @@ func NewDB(dbconfig *config.DBConfig) (*gorm.DB, error) {
 			return nil, err
 		}
 	}
+	db.LogMode(true)
 	return db, nil
 }
 
 func AutoMigrate(db *gorm.DB) error {
 	err := db.AutoMigrate(
+		&models.Project{},
 		&models.Department{},
 		&models.Career{},
 		&models.User{},
@@ -71,7 +74,6 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.ProjectType{},
 		&models.Rubric{},
 		&models.Review{},
-		&models.Project{},
 	).Error
 	return err
 }

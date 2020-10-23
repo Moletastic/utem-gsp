@@ -9,7 +9,7 @@ import (
 )
 
 func GetMySQLDSN(c config.DBConfig) string {
-	return fmt.Sprintf("%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true&loc=Local", c.User, c.Host, c.Port, c.Name)
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true&loc=Local", c.User, c.Pass, c.Host, c.Port, c.Name)
 }
 
 func NewMySQL(config config.DBConfig) (*gorm.DB, error) {

@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if config.DBConfig.Refresh && config.Pop {
+	if config.Pop {
 		fmt.Println("Populate Database...")
 		err = pop(d)
 		if err != nil {

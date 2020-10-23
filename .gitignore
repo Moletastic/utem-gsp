@@ -1,6 +1,8 @@
 vendor/
 *.db
+.idea/
 .vscode/
 .idea/
 utem-gsp
 *.log
+*.vim

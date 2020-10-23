@@ -8,19 +8,19 @@ import (
 )
 
 type DBConfig struct {
-	Engine  string
-	Name    string
-	Host    string
-	Port    uint
-	User    string
-	Pass    string
-	Refresh bool
+	Engine  string `json:"engine"`
+	Name    string `json:"name"`
+	Host    string `json:"host"`
+	Port    uint   `json:"port"`
+	User    string `json:"user"`
+	Pass    string `json:"pass"`
+	Refresh bool   `json:"refresh"`
 }
 
 type GSPConfig struct {
-	Port     uint
-	Pop      bool
-	DBConfig *DBConfig
+	Port     uint      `json:"port"`
+	Pop      bool      `json:"pop"`
+	DBConfig *DBConfig `json:"db_config"`
 }
 
 func GetConfig() (*GSPConfig, error) {

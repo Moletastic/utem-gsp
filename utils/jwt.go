@@ -15,7 +15,7 @@ type GSPClaim struct {
 
 var JWTSecret = []byte("chester")
 
-func GenerateJWT(u models.ProfiledUser) string {
+func GenerateJWT(u models.ProfiledUser) (string, error) {
 	claims := &GSPClaim{
 		User:    u,
 		IsAdmin: true,
@@ -24,6 +24,9 @@ func GenerateJWT(u models.ProfiledUser) string {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, _ := token.SignedString(JWTSecret)
-	return t
+	t, err := token.SignedString(JWTSecret)
+	if err != nil {
+		return t, err
+	}
+	return t, nil
 }

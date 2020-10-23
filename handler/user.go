@@ -65,11 +65,15 @@ type LoginResponse struct {
 	Token string              `json:"token"`
 }
 
-func NewLoginResp(u *models.ProfiledUser) *LoginResponse {
+func NewLoginResp(u *models.ProfiledUser) (*LoginResponse, error) {
 	r := new(LoginResponse)
-	r.Token = utils.GenerateJWT(*u)
+	token, err := utils.GenerateJWT(*u)
+	if err != nil {
+		return nil, err
+	}
+	r.Token = token
 	r.User = *u
-	return r
+	return r, nil
 }
 
 // SignUp registers a new User
@@ -136,5 +140,9 @@ func (h *Handler) Login(c echo.Context) error {
 		profile := models.NewAdminProfile(a)
 		profiled = models.NewProfiledUser(u, &profile)
 	}
-	return c.JSON(http.StatusOK, NewLoginResp(&profiled))
+	resp, err := NewLoginResp(&profiled)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+	}
+	return c.JSON(http.StatusOK, resp)
 }

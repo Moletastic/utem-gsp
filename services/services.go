@@ -5,6 +5,7 @@ import (
 
 	"github.com/Moletastic/utem-gsp/models"
 	"github.com/jinzhu/gorm"
+	"github.com/mohae/deepcopy"
 )
 
 type ListParams struct {
@@ -41,9 +42,8 @@ func NewCrudService(model models.Model, entity string, preloads []string, d *gor
 	return cs
 }
 
-func (s *CRUDService) GetModel() models.Model {
-	model := s.Model
-	return model
+func (s *CRUDService) GetModel() interface{} {
+	return deepcopy.Copy(s.Model)
 }
 
 func (cs *CRUDService) Create(obj interface{}) error {

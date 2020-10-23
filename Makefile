@@ -9,7 +9,7 @@ front-mysql:
 	mysql-workbench
 
 test:
-	go test test/endpoints_test.go -count=1
+	go test test/jwt_test.go -count=1
 
 build:
 	go build .
@@ -25,3 +25,8 @@ refresh-mysql:
 
 run:
 	go run .
+
+log:
+	grc tail -f logs.log
+
+.PHONY: test

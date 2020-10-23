@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"github.com/Moletastic/utem-gsp/decoder"
 	"github.com/Moletastic/utem-gsp/store"
 	"github.com/labstack/echo/v4"
-	"github.com/mitchellh/mapstructure"
 )
 
 type Handler struct {
@@ -37,9 +37,10 @@ func (h *Handler) DecodeCRUDReq(c echo.Context, req *CRUDReq, data interface{}) 
 	if err := c.Bind(req); err != nil {
 		return err
 	}
-	err := mapstructure.Decode(req.Data, data)
+	d, err := decoder.NewDecoder(data)
 	if err != nil {
 		return err
 	}
+	err = d.Decode(req.Data)
 	return nil
 }
