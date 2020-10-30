@@ -10,7 +10,11 @@ type LinkType struct {
 	Icon string `mapstructure:"icon" json:"icon"`
 }
 
-func (l *LinkType) New() *LinkType {
+func (l LinkType) Bind(v interface{}) {
+	v = LinkType{}
+}
+
+func (l LinkType) New() Model {
 	return &LinkType{}
 }
 
@@ -32,7 +36,11 @@ type Link struct {
 	ProjectID  int64    `mapstructure:"project_id" json:"project_id,omitempty" gorm:"column:project_id"`
 }
 
-func (l *Link) New() *Link {
+func (l Link) Bind(v interface{}) {
+	v = Link{}
+}
+
+func (l Link) New() Model {
 	return &Link{}
 }
 
@@ -52,7 +60,11 @@ type Subject struct {
 	Icon string `json:"icon" mapstructure:"icon"`
 }
 
-func (s *Subject) New() *Subject {
+func (s Subject) Bind(v interface{}) {
+	v = Subject{}
+}
+
+func (s Subject) New() Model {
 	return &Subject{}
 }
 
@@ -74,7 +86,11 @@ type Channel struct {
 	Meets    []Meet `mapstructure:"meets" json:"meets"`
 }
 
-func (c *Channel) New() *Channel {
+func (c Channel) Bind(v interface{}) {
+	v = Channel{}
+}
+
+func (c Channel) New() Model {
 	return &Channel{}
 }
 
@@ -99,7 +115,11 @@ type Meet struct {
 	ProjectID int64     `mapstructure:"project_id" json:"project_id"`
 }
 
-func (m *Meet) New() *Meet {
+func (m Meet) Bind(v interface{}) {
+	v = Meet{}
+}
+
+func (m Meet) New() Model {
 	return &Meet{}
 }
 
@@ -125,7 +145,11 @@ type Commit struct {
 	ProjectID int64      `json:"project_id" mapstructure:"project_id"`
 }
 
-func (c *Commit) New() *Commit {
+func (c Commit) Bind(v interface{}) {
+	v = Commit{}
+}
+
+func (c Commit) New() Model {
 	return &Commit{}
 }
 
@@ -151,7 +175,11 @@ type Milestone struct {
 	ProjectID int64     `json:"project_id" mapstructure:"project_id"`
 }
 
-func (m *Milestone) New() *Milestone {
+func (m Milestone) Bind(v interface{}) {
+	v = Milestone{}
+}
+
+func (m Milestone) New() Model {
 	return &Milestone{}
 }
 
@@ -172,6 +200,14 @@ type Progress struct {
 	ProjectID int64   `json:"project_id" mapstructure:"project_id"`
 }
 
+func (p Progress) Bind(v interface{}) {
+	v = Progress{}
+}
+
+func (Progress) New() Model {
+	return &Progress{}
+}
+
 func NewProgress(n string, pid int64) Progress {
 	p := Progress{
 		Name:      n,
@@ -184,6 +220,14 @@ func NewProgress(n string, pid int64) Progress {
 type ProjectState struct {
 	GSPModel
 	Name string `json:"name" mapstructure:"name"`
+}
+
+func (s ProjectState) Bind(v interface{}) {
+	v = ProjectState{}
+}
+
+func (ProjectState) New() Model {
+	return &ProjectState{}
 }
 
 func NewProjectState(n string) ProjectState {
@@ -200,6 +244,14 @@ type ProjectType struct {
 	Projects []Project `json:"projects" mapstructure:"projects"`
 }
 
+func (t ProjectType) Bind(v interface{}) {
+	v = ProjectType{}
+}
+
+func (ProjectType) New() Model {
+	return &ProjectType{}
+}
+
 func NewProjectType(n string) ProjectType {
 	t := ProjectType{
 		Name: n,
@@ -213,6 +265,14 @@ type Rubric struct {
 	Name    string   `json:"name" mapstructure:"name"`
 	FileURL string   `json:"file_url" mapstructure:"file_url"`
 	Reviews []Review `gorm:"->" json:"reviews" mapstructure:"reviews"`
+}
+
+func (r Rubric) Bind(v interface{}) {
+	v = Rubric{}
+}
+
+func (r Rubric) New() Model {
+	return &Rubric{}
 }
 
 func NewRubric(n string, url string) Rubric {
@@ -236,6 +296,14 @@ type Review struct {
 	Score      string  `mapstructure:"score" json:"score"`
 	ReviewerID int64   `json:"reviewer_id" mapstructure:"reviewer_id"`
 	Reviewer   Teacher `mapstructure:"reviewer" json:"reviewer"`
+}
+
+func (r Review) New() Model {
+	return &Review{}
+}
+
+func (r Review) Bind(v interface{}) {
+	v = Review{}
 }
 
 func NewReview(n string, rid int64, pid int64, url string, rvid int64, score string) Review {
@@ -269,6 +337,14 @@ type Project struct {
 	Tags           string       `json:"tags" mapstructure:"tags"`
 	Commits        []Commit     `json:"commits" mapstructure:"commits"`
 	Reviews        []Review     `json:"reviews" mapstructure:"reviews"`
+}
+
+func (p Project) Bind(v interface{}) {
+	v = Project{}
+}
+
+func (p Project) New() Model {
+	return &Project{}
 }
 
 func NewProject(title string, authors []Student, guides []Teacher, subjects []Subject, ptype ProjectType) Project {

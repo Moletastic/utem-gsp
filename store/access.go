@@ -10,27 +10,30 @@ import (
 
 type AccessStore struct {
 	db      *gorm.DB
-	User    *services.CRUDHandler
+	Account *services.CRUDHandler
 	Related []*services.CRUDHandler
 }
 
 func NewAccessStore(db *gorm.DB) *AccessStore {
 	teacher := services.NewCrudService(
 		&models.Teacher{},
+		models.Teacher{},
 		"access:teacher",
-		[]string{"User"},
+		[]string{"Account"},
 		db,
 	)
-	user := services.NewCRUDHandler("user", services.NewCrudService(
-		&models.User{},
+	user := services.NewCRUDHandler("account", services.NewCrudService(
+		&models.Account{},
+		models.Account{},
 		"access:user",
 		[]string{},
 		db,
 	))
 	admin := services.NewCrudService(
 		&models.Admin{},
+		models.Admin{},
 		"access:admin",
-		[]string{"User"},
+		[]string{"Account"},
 		db,
 	)
 	related := []*services.CRUDHandler{
@@ -40,12 +43,12 @@ func NewAccessStore(db *gorm.DB) *AccessStore {
 	return &AccessStore{
 		db:      db,
 		Related: related,
-		User:    user,
+		Account: user,
 	}
 }
 
-func (as *AccessStore) GetByID(id uint) (*models.User, error) {
-	var m models.User
+func (as *AccessStore) GetByID(id uint) (*models.Account, error) {
+	var m models.Account
 	if err := as.db.First(&m, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -55,9 +58,9 @@ func (as *AccessStore) GetByID(id uint) (*models.User, error) {
 	return &m, nil
 }
 
-func (as *AccessStore) GetByEmail(e string) (*models.User, error) {
-	var m models.User
-	if err := as.db.Where(&models.User{Email: e}).First(&m).Error; err != nil {
+func (as *AccessStore) GetByEmail(e string) (*models.Account, error) {
+	var m models.Account
+	if err := as.db.Where(&models.Account{Email: e}).First(&m).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -66,11 +69,11 @@ func (as *AccessStore) GetByEmail(e string) (*models.User, error) {
 	return &m, nil
 }
 
-func (as *AccessStore) Create(u *models.User) (err error) {
+func (as *AccessStore) Create(u *models.Account) (err error) {
 	return as.db.Create(u).Error
 }
 
-func (as *AccessStore) Update(u *models.User) error {
+func (as *AccessStore) Update(u *models.Account) error {
 	return as.db.Model(u).Save(u).Error
 }
 
@@ -88,7 +91,7 @@ func (as *AccessStore) GetTeacherByEmail(e string) (*models.Teacher, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := as.db.Preload("User").Where("user_id = ?", u.ID).First(&t).Error; err != nil {
+	if err := as.db.Preload("Account").Where("account_id = ?", u.ID).First(&t).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -107,7 +110,7 @@ func (as *AccessStore) GetAdminByEmail(e string) (*models.Admin, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := as.db.Preload("User").Where("user_id = ?", u.ID).First(&a).Error; err != nil {
+	if err := as.db.Preload("Account").Where("account_id = ?", u.ID).First(&a).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

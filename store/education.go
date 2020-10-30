@@ -14,18 +14,21 @@ type EducationStore struct {
 func NewEducationStore(db *gorm.DB) *EducationStore {
 	career := services.NewCrudService(
 		&models.Career{},
+		models.Career{},
 		"edu:career",
 		[]string{"Department", "Students"},
 		db,
 	)
 	department := services.NewCrudService(
 		&models.Department{},
+		models.Department{},
 		"edu:department",
 		[]string{"Careers", "Students"},
 		db,
 	)
 	student := services.NewCrudService(
 		&models.Student{},
+		models.Student{},
 		"edu:student",
 		[]string{},
 		db,

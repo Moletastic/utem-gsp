@@ -7,23 +7,26 @@ import (
 	"reflect"
 	"strconv"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Model interface {
 	InitGSP(t string)
 	GetID() int64
 	GetUID() string
-	Clear()
 	SetID(id int64)
+	Bind(v interface{})
+}
+
+type Entity interface {
+	Bind(v interface{})
+	New() Model
 }
 
 type CommonModel struct {
-	ID        int64           `gorm:"primaryKey" mapstructure:"id" json:"id"`
-	CreatedAt time.Time       `json:"created_at"`
-	UpdatedAt time.Time       `json:"updated_at"`
-	DeletedAt *gorm.DeletedAt `json:"deleted_at"`
+	ID        int64      `gorm:"primaryKey" mapstructure:"id" json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at"`
 }
 
 type GSPModel struct {
@@ -38,7 +41,11 @@ func (gsp *GSPModel) Clear() {
 	p.Set(reflect.Zero(p.Type()))
 }
 
-func (gsp *GSPModel) New() *GSPModel {
+func (gsp GSPModel) Bind(v interface{}) {
+	v = GSPModel{}
+}
+
+func (gsp GSPModel) New() *GSPModel {
 	return &GSPModel{}
 }
 

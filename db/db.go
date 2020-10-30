@@ -49,7 +49,9 @@ func NewDB(dbconfig *config.DBConfig) (*gorm.DB, error) {
 			return nil, err
 		}
 	}
-	db.LogMode(true)
+	if dbconfig.LogMode {
+		db.LogMode(true)
+	}
 	return db, nil
 }
 
@@ -58,7 +60,7 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.Project{},
 		&models.Department{},
 		&models.Career{},
-		&models.User{},
+		&models.Account{},
 		&models.Student{},
 		&models.Teacher{},
 		&models.Admin{},

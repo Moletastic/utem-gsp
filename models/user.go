@@ -27,18 +27,26 @@ func (t UType) String() string {
 	return s
 }
 
-type User struct {
+type Account struct {
 	GSPModel
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Nick      string `json:"nick"`
-	RUT       string `json:"rut"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	UserType  string `json:"user_type"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Nick        string `json:"nick"`
+	RUT         string `json:"rut"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	AccountType string `json:"account_type"`
 }
 
-func (u *User) HashPassword(plain string) (string, error) {
+func (ac Account) Bind(v interface{}) {
+	v = Account{}
+}
+
+func (ac Account) New() Model {
+	return &Account{}
+}
+
+func (u *Account) HashPassword(plain string) (string, error) {
 	if len(plain) == 0 {
 		return "", errors.New("Contraseña vacía")
 	}
@@ -46,7 +54,7 @@ func (u *User) HashPassword(plain string) (string, error) {
 	return string(h), err
 }
 
-func (u *User) CheckPassword(plain string) bool {
+func (u *Account) CheckPassword(plain string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plain))
 	return err == nil
 }

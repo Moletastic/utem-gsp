@@ -17,6 +17,6 @@ func Pretty(i interface{}) string {
 	return string(s)
 }
 
-func GetLocalAddress(port uint) string {
-	return fmt.Sprintf(":%d", port)
+func Bind(src, dest interface{}) {
+	dest = src
 }

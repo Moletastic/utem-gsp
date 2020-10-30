@@ -13,7 +13,7 @@ type GSPClient struct {
 }
 
 type Tokened struct {
-	Token string `json:token`
+	Token string `json:"token"`
 }
 
 func NewGSPClient(b string) *GSPClient {
@@ -32,18 +32,21 @@ func TestJWT(t *testing.T) {
 		},
 	}
 	var data Tokened
-	resp, _, errs := c.Client.Post(c.BaseURL + "/users/login").Send(login).EndStruct(&data)
-	if len(errs) > 0 {
-		t.Error(errs)
-	}
+	resp, body, errs := c.Client.Post(c.BaseURL + "/access/login").Send(login).EndStruct(&data)
 	if resp.StatusCode == 401 || resp.StatusCode == 400 || resp.StatusCode == 422 {
+		if len(errs) > 0 {
+			t.Error(errs)
+			return
+		}
+		t.Error(body)
 		t.Error(resp.StatusCode)
+		return
 	}
-	resp, _, errs = c.Client.Get(c.BaseURL+"/gsp/project").Set("Authorization", ""+data.Token).End()
-	if len(errs) > 0 {
-		t.Error(errs)
-	}
-	if resp.StatusCode == 401 || resp.StatusCode == 400 || resp.StatusCode == 422 {
-		t.Error(resp.StatusCode)
+	resp, _, errs = c.Client.Post(c.BaseURL+"/gsp/account/me").Set("Authorization", "Bearer "+data.Token).End()
+	if resp.StatusCode != 200 {
+		t.Error(resp.Body)
+		if len(errs) > 0 {
+			t.Error(errs)
+		}
 	}
 }

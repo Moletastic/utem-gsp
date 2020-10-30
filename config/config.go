@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/Moletastic/utem-gsp/utils"
 )
 
 type DBConfig struct {
@@ -15,12 +17,21 @@ type DBConfig struct {
 	User    string `json:"user"`
 	Pass    string `json:"pass"`
 	Refresh bool   `json:"refresh"`
+	LogMode bool   `json:"log_mode"`
 }
 
 type GSPConfig struct {
 	Port     uint      `json:"port"`
 	Pop      bool      `json:"pop"`
 	DBConfig *DBConfig `json:"db_config"`
+}
+
+func (c *GSPConfig) GetAddress() string {
+	return fmt.Sprintf(":%d", c.Port)
+}
+
+func (c *GSPConfig) ToString() string {
+	return utils.Pretty(c)
 }
 
 func GetConfig() (*GSPConfig, error) {
@@ -55,6 +66,12 @@ func GetConfig() (*GSPConfig, error) {
 		fmt.Println("Error reading DB_REFRESH env variable. Ignoring")
 	} else {
 		config.DBConfig.Refresh = refresh
+	}
+	logmode, err := strconv.ParseBool(os.Getenv("DB_LOG"))
+	if err != nil {
+		fmt.Println("Error reading DB_LOG env variable. Ignoring")
+	} else {
+		config.DBConfig.LogMode = logmode
 	}
 	if config.DBConfig.Engine == "" || config.DBConfig.Name == "" {
 		return nil, errors.New("DB_NAME and DB_ENGINE env variables needs to be setted")

@@ -27,20 +27,21 @@ func (r *UserRegisterReq) bind(c echo.Context, u *models.User) error {
 	if err := c.Bind(r); err != nil {
 		return err
 	}
-	u.FirstName = r.Form.FirstName
-	u.LastName = r.Form.LastName
-	u.RUT = r.Form.RUT
-	u.Nick = r.Form.Nick
-	u.Email = r.Form.Email
-	u.UserType = r.Form.UserType
-	if r.Form.Password != u.Password {
-		h, err := u.HashPassword(r.Form.Password)
+	u.Account = models.Account{}
+	u.Account.InitGSP("account")
+	u.Account.FirstName = r.Form.FirstName
+	u.Account.LastName = r.Form.LastName
+	u.Account.RUT = r.Form.RUT
+	u.Account.Nick = r.Form.Nick
+	u.Account.Email = r.Form.Email
+	u.Account.AccountType = r.Form.UserType
+	if r.Form.Password != u.Account.Password {
+		h, err := u.Account.HashPassword(r.Form.Password)
 		if err != nil {
 			return err
 		}
-		u.Password = h
+		u.Account.Password = h
 	}
-	u.InitGSP("access:user")
 	return nil
 }
 
@@ -61,11 +62,11 @@ func (l *UserLoginReq) bind(c echo.Context) error {
 }
 
 type LoginResponse struct {
-	User  models.ProfiledUser `json:"user"`
-	Token string              `json:"token"`
+	User  models.User `json:"user"`
+	Token string      `json:"token"`
 }
 
-func NewLoginResp(u *models.ProfiledUser) (*LoginResponse, error) {
+func NewLoginResp(u *models.User) (*LoginResponse, error) {
 	r := new(LoginResponse)
 	token, err := utils.GenerateJWT(*u)
 	if err != nil {
@@ -84,21 +85,22 @@ func (h *Handler) SignUp(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
 	c.Logger().Info(utils.Pretty(u))
-	if err := h.AccStore.Create(&u); err != nil {
+	ac := u.Account
+	if err := h.AccStore.Create(&ac); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	if u.UserType == "Teacher" {
+	if ac.AccountType == "Teacher" {
 		t := models.Teacher{
-			User:   u,
-			UserID: u.ID,
+			Account:   ac,
+			AccountID: ac.ID,
 		}
 		if err := h.AccStore.CreateTeacher(&t); err != nil {
 			return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 		}
-	} else if u.UserType == "Admin" {
+	} else if ac.AccountType == "Admin" {
 		a := models.Admin{
-			User:   u,
-			UserID: u.ID,
+			Account:   ac,
+			AccountID: ac.ID,
 		}
 		if err := h.AccStore.CreateAdmin(&a); err != nil {
 			return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
@@ -123,22 +125,22 @@ func (h *Handler) Login(c echo.Context) error {
 		return c.JSON(http.StatusForbidden, utils.AccessForbidden())
 	}
 
-	var profiled models.ProfiledUser
+	var profiled models.User
 
-	if u.UserType == "Teacher" {
+	if u.AccountType == "Teacher" {
 		t, err := h.AccStore.GetTeacherByEmail(u.Email)
 		if err != nil {
 			return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 		}
-		profile := models.NewTeacherProfile(t)
-		profiled = models.NewProfiledUser(u, &profile)
-	} else if u.UserType == "Admin" {
+		profiled = models.NewUser(&t.Account)
+		profiled.AccountID = t.Account.ID
+	} else if u.AccountType == "Admin" {
 		a, err := h.AccStore.GetAdminByEmail(u.Email)
 		if err != nil {
 			return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 		}
-		profile := models.NewAdminProfile(a)
-		profiled = models.NewProfiledUser(u, &profile)
+		profiled = models.NewUser(&a.Account)
+		profiled.AccountID = a.Account.ID
 	}
 	resp, err := NewLoginResp(&profiled)
 	if err != nil {

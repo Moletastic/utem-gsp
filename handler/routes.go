@@ -18,9 +18,8 @@ func (h *Handler) Register(v1 *echo.Group) {
 	users.POST("/signup", h.SignUp)
 	users.POST("/login", h.Login)
 
-	v1.Group("nop", middleware.JWTWithConfig(config))
-
 	restricted := v1.Group("/gsp")
+	restricted.Use(middleware.JWTWithConfig(config))
 	restricted.POST("/account/me", h.Me)
 	for _, handler := range h.AccStore.Related {
 		uri := fmt.Sprintf("/%s", handler.Name)
@@ -43,12 +42,21 @@ func (h *Handler) Register(v1 *echo.Group) {
 	}
 
 	for _, handler := range h.ProStore.Related {
-		uri := fmt.Sprintf("/%s", handler.Name)
-		uriID := fmt.Sprintf("/%s/:id", handler.Name)
-		restricted.GET(uriID, handler.GetByID)
-		restricted.GET(uri, handler.List)
-		restricted.POST(uri, handler.Create)
-		restricted.PUT(uriID, handler.Update)
-		restricted.DELETE(uriID, handler.Delete)
+		if handler.Name != "project" {
+			uri := fmt.Sprintf("/%s", handler.Name)
+			uriID := fmt.Sprintf("/%s/:id", handler.Name)
+			restricted.GET(uriID, handler.GetByID)
+			restricted.GET(uri, handler.List)
+			restricted.POST(uri, handler.Create)
+			restricted.PUT(uriID, handler.Update)
+			restricted.DELETE(uriID, handler.Delete)
+		}
 	}
+	uri := fmt.Sprintf("/%s", "project")
+	uriID := fmt.Sprintf("/%s/:id", "project")
+	restricted.GET(uri, h.ProStore.Project.List)
+	restricted.GET(uriID, h.ProStore.Related[0].GetByID)
+	restricted.POST(uri, h.ProStore.Related[0].Create)
+	restricted.PUT(uriID, h.ProStore.Related[0].Update)
+	restricted.DELETE(uriID, h.ProStore.Related[0].Delete)
 }

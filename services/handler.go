@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// CUReq for CreateUpdateReq
+// CRUDReq for CreateUpdateReq
 type CRUDReq struct {
 	Data map[string]interface{} `json:"data"`
 }
@@ -63,17 +63,18 @@ func (crud *CRUDHandler) decodeListReq(c echo.Context, req *ListReq) error {
 
 func (crud *CRUDHandler) Create(c echo.Context) error {
 	req := new(CRUDReq)
-	obj := crud.Service.Model
+	obj := crud.Service.GetNew()
 	err := crud.decodeReq(c, req, &obj)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	obj.InitGSP(crud.Service.Entity)
+	obj.InitGSP(crud.Service.EntityName)
 	err = crud.Service.Create(obj)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	err = crud.Service.GetByID(obj.GetID(), obj)
+	c.Logger().Info("hola")
+	err = crud.Service.GetByID(obj, obj.GetID())
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
@@ -82,14 +83,22 @@ func (crud *CRUDHandler) Create(c echo.Context) error {
 
 func (crud *CRUDHandler) Update(c echo.Context) error {
 	req := new(CRUDReq)
-	id, _ := strconv.Atoi(c.Param("id"))
-	obj := crud.Service.Model
-	err := crud.decodeReq(c, req, &obj)
+	p, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	obj.InitGSP(crud.Service.Entity)
-	err = crud.Service.Update(obj, int64(id))
+	id := int64(p)
+	obj := crud.Service.GetNew()
+	err = crud.decodeReq(c, req, &obj)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+	}
+	obj.InitGSP(crud.Service.EntityName)
+	err = crud.Service.Update(obj, id)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+	}
+	err = crud.Service.GetByID(obj, id)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
@@ -98,13 +107,17 @@ func (crud *CRUDHandler) Update(c echo.Context) error {
 
 func (crud *CRUDHandler) Delete(c echo.Context) error {
 	req := new(CRUDReq)
-	obj := crud.Service.Model
-	id, _ := strconv.Atoi(c.Param("id"))
-	err := crud.decodeReq(c, req, &obj)
+	p, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	err = crud.Service.Delete(obj, int64(id))
+	id := int64(p)
+	obj := crud.Service.GetNew()
+	err = crud.decodeReq(c, req, &obj)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+	}
+	err = crud.Service.Delete(obj, id)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
@@ -112,16 +125,17 @@ func (crud *CRUDHandler) Delete(c echo.Context) error {
 }
 
 func (crud *CRUDHandler) GetByID(c echo.Context) error {
-	idstr, _ := strconv.Atoi(c.Param("id"))
-	id := int64(idstr)
-	obj := crud.Service.GetModel()
-	foo := obj
-	c.Logger().Info(foo)
-	err := crud.Service.GetByID(id, foo)
+	p, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	return c.JSON(http.StatusOK, foo)
+	id := int64(p)
+	obj := crud.Service.GetNew()
+	err = crud.Service.GetByID(obj, id)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
+	}
+	return c.JSON(http.StatusOK, obj)
 }
 
 func (crud *CRUDHandler) List(c echo.Context) error {

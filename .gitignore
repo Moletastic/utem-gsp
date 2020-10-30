@@ -2,7 +2,8 @@ vendor/
 *.db
 .idea/
 .vscode/
+tmp/
+bin/
 .idea/
-utem-gsp
 *.log
 *.vim

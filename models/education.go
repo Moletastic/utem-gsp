@@ -7,6 +7,14 @@ type Department struct {
 	Careers []Career `json:"careers" gorm:"->"`
 }
 
+func (d Department) Bind(v interface{}) {
+	v = Department{}
+}
+
+func (d Department) New() Model {
+	return &Department{}
+}
+
 // Career has many students and one Department associated
 type Career struct {
 	GSPModel
@@ -15,6 +23,14 @@ type Career struct {
 	Department   *Department `json:"department,omitempty" mapstructure:"department" gorm:"foreignKey:DepartmentID"`
 	DepartmentID int64       `json:"department_id,omitempty" mapstructure:"department_id" gorm:"column:department_id"`
 	Students     []Student   `json:"students" mapstructure:"students" gorm:"->"`
+}
+
+func (c Career) Bind(v interface{}) {
+	v = Career{}
+}
+
+func (c Career) New() Model {
+	return &Career{}
 }
 
 // Student has one associated Career
@@ -27,6 +43,14 @@ type Student struct {
 	Career    *Career   `mapstructure:"career" json:"career" gorm:"->"`
 	EntryYear int       `mapstructure:"entry_year" json:"entry_year"`
 	Projects  []Project `json:"projects" mapstructure:"projects" gorm:"many2many:project_authors;"`
+}
+
+func (s Student) Bind(v interface{}) {
+	v = Student{}
+}
+
+func (s Student) New() Model {
+	return &Student{}
 }
 
 func NewStudent(f string, l string, cid int64) Student {

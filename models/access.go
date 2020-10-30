@@ -8,15 +8,23 @@ import (
 // Teacher is a DBModel for Teacher Entity
 type Teacher struct {
 	GSPModel
-	UserID    int64     `json:"user_id" mapstructure:"user_id"`
-	User      User      `json:"user" mapstructure:"user"`
+	AccountID int64     `json:"account_id" mapstructure:"account_id"`
+	Account   Account   `json:"account" mapstructure:"account"`
 	EntryYear int       `json:"entry_year" mapstructure:"entry_year"`
-	Projects  []Project `json:"projects" mapstructure:"projects"`
+	Projects  []Project `gorm:"many2many:project_guides" json:"projects" mapstructure:"projects"`
+}
+
+func (t Teacher) Bind(v interface{}) {
+	v = Teacher{}
+}
+
+func (t Teacher) New() Model {
+	return &Teacher{}
 }
 
 func NewTeacher(f string, l string) Teacher {
 	nick := fmt.Sprintf("%s.%s", strings.ToLower(f), strings.ToLower(l))
-	u := User{
+	u := Account{
 		Email:     nick + "@utem.cl",
 		FirstName: f,
 		LastName:  l,
@@ -25,7 +33,7 @@ func NewTeacher(f string, l string) Teacher {
 	u.InitGSP("access:user")
 	t := Teacher{
 		EntryYear: 2010,
-		User:      u,
+		Account:   u,
 	}
 	t.InitGSP("access:teacher")
 	return t
@@ -34,15 +42,23 @@ func NewTeacher(f string, l string) Teacher {
 // Coordinator is a DBModel for Coordinator Entity
 type Coordinator struct {
 	GSPModel
-	UserID    int64 `json:"user_id" mapstructure:"user_id"`
-	User      User  `json:"user" mapstructure:"user"`
-	EntryYear int   `json:"entry_year" mapstructure:"entry_year"`
+	AccountID int64   `json:"account_id" mapstructure:"account_id"`
+	Account   Account `json:"account" mapstructure:"account"`
+	EntryYear int     `json:"entry_year" mapstructure:"entry_year"`
 }
 
 // Admin is a DBModel for Admin Entity
 type Admin struct {
 	GSPModel
-	UserID    int64 `json:"user_id" mapstructure:"user_id"`
-	User      User  `json:"user" mapstructure:"user"`
-	EntryYear int   `json:"entry_year" mapstructure:"entry_year"`
+	AccountID int64   `json:"account_id" mapstructure:"account_id"`
+	Account   Account `json:"account" mapstructure:"account"`
+	EntryYear int     `json:"entry_year" mapstructure:"entry_year"`
+}
+
+func (a Admin) Bind(v interface{}) {
+	v = Admin{}
+}
+
+func (a Admin) New() Model {
+	return &Admin{}
 }

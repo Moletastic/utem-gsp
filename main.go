@@ -7,16 +7,26 @@ import (
 	"github.com/Moletastic/utem-gsp/config"
 	"github.com/Moletastic/utem-gsp/db"
 	"github.com/Moletastic/utem-gsp/handler"
+	"github.com/Moletastic/utem-gsp/pop"
 	"github.com/Moletastic/utem-gsp/router"
 	"github.com/Moletastic/utem-gsp/store"
-	"github.com/Moletastic/utem-gsp/utils"
 	"github.com/joho/godotenv"
 )
 
 const (
-	Version = "0.1"
-	Banner  = "GSP"
+	Version = "0.5"
+	Banner  = `
+ _   _ _____ ___ __  __  ___ ___ ___
+| | | |_   _| __|  \/  |/ __/ __| _ \
+| |_| | | | | _|| |\/| | (_ \__ \  _/
+ \___/  |_| |___|_|  |_|\___|___/_|
+	`
 )
+
+func printInfo() {
+	fmt.Println(Banner)
+	fmt.Printf("Version: %s\n", Version)
+}
 
 func main() {
 	err := godotenv.Load()
@@ -27,14 +37,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(utils.Pretty(config))
 	d, err := db.NewDB(config.DBConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
 	if config.Pop {
 		fmt.Println("Populate Database...")
-		err = pop(d)
+		err = pop.Populate(d)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -47,6 +56,6 @@ func main() {
 	h := handler.NewHandler(*as, *es, *ps)
 	v1 := r.Group("/api")
 	h.Register(v1)
-	address := utils.GetLocalAddress(config.Port)
-	r.Logger.Fatal(r.Start(address))
+	printInfo()
+	r.Logger.Fatal(r.Start(config.GetAddress()))
 }

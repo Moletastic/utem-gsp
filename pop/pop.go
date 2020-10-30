@@ -1,4 +1,4 @@
-package main
+package pop
 
 import (
 	"math/rand"
@@ -10,7 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-func pop(d *gorm.DB) error {
+func Populate(d *gorm.DB) error {
 	ac := store.NewAccessStore(d)
 	es := store.NewEducationStore(d)
 	pro := store.NewProjectStore(d)
@@ -44,7 +44,7 @@ func pop(d *gorm.DB) error {
 		return err
 	}
 	chs, err := generateChannels(pro.Related[6].Service)
-	projects, err := generateProjects(pro.Project, students, teachers, subjects, types, states)
+	projects, err := generateProjects(pro.Related[0].Service, students, teachers, subjects, types, states)
 
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func pop(d *gorm.DB) error {
 	}
 
 	for _, project := range projects {
-		err = fillProject(pro.Project, &project, rubrics, chs, ltypes)
+		err = fillProject(pro.Related[0].Service, &project, rubrics, chs, ltypes)
 		if err != nil {
 			return err
 		}
@@ -186,23 +186,23 @@ func generateAdmins(s *services.CRUDService) ([]models.Admin, error) {
 	admins := make([]models.Admin, 0)
 	admins = append(admins, models.Admin{
 		EntryYear: 2015,
-		User: models.User{
-			Email:     "jacob@utem.cl",
-			FirstName: "Jacob",
-			LastName:  "Romero",
-			Nick:      "jacob.romero",
-			RUT:       "19.523.952-5",
-			UserType:  "Admin",
+		Account: models.Account{
+			Email:       "jacob@utem.cl",
+			FirstName:   "Jacob",
+			LastName:    "Romero",
+			Nick:        "jacob.romero",
+			RUT:         "19.523.952-5",
+			AccountType: "Admin",
 		},
 	})
 
-	hash, err := admins[0].User.HashPassword("admin123")
+	hash, err := admins[0].Account.HashPassword("admin123")
 
 	if err != nil {
 		return nil, err
 	}
 
-	admins[0].User.Password = hash
+	admins[0].Account.Password = hash
 
 	for index, admin := range admins {
 		admin.InitGSP("access:admin")
@@ -219,63 +219,63 @@ func generateAdmins(s *services.CRUDService) ([]models.Admin, error) {
 func generateTeachers(s *services.CRUDService) ([]models.Teacher, error) {
 	teachers := make([]models.Teacher, 0)
 	names := []FLName{
-		FLName{
+		{
 			F: "Michael",
 			L: "Miranda",
 		},
-		FLName{
+		{
 			F: "Oscar",
 			L: "Magna",
 		},
-		FLName{
+		{
 			F: "Santiago",
 			L: "Zapata",
 		},
-		FLName{
+		{
 			F: "Victor",
 			L: "Escobar",
 		},
-		FLName{
+		{
 			F: "Danny",
 			L: "Lobos",
 		},
-		FLName{
+		{
 			F: "Hector",
 			L: "Pincheira",
 		},
-		FLName{
+		{
 			F: "Mauro",
 			L: "Castillo",
 		},
-		FLName{
+		{
 			F: "David",
 			L: "Castro",
 		},
-		FLName{
+		{
 			F: "Sara",
 			L: "Rojas",
 		},
-		FLName{
+		{
 			F: "Patricia",
 			L: "Mellado",
 		},
-		FLName{
+		{
 			F: "Jorge",
 			L: "Vergara",
 		},
-		FLName{
+		{
 			F: "Cristian",
 			L: "Barria",
 		},
 	}
 	for _, pair := range names {
 		t := models.NewTeacher(pair.F, pair.L)
-		t.User.UserType = "Teacher"
-		h, err := t.User.HashPassword(t.User.Nick)
+		t.Account.AccountType = "Teacher"
+		h, err := t.Account.HashPassword(t.Account.Nick)
 		if err != nil {
 			return nil, err
 		}
-		t.User.Password = h
+		t.Account.Password = h
 		err = s.Create(&t)
 		if err != nil {
 			return nil, err

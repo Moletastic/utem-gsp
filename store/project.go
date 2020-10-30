@@ -7,7 +7,7 @@ import (
 )
 
 type ProjectStore struct {
-	Project *services.CRUDService
+	Project *services.ProjectHandler
 	Related []*services.CRUDHandler
 	db      *gorm.DB
 }
@@ -15,6 +15,7 @@ type ProjectStore struct {
 func NewProjectStore(db *gorm.DB) *ProjectStore {
 	project := services.NewCrudService(
 		&models.Project{},
+		models.Project{},
 		"project:project",
 		[]string{
 			"Authors",
@@ -22,7 +23,7 @@ func NewProjectStore(db *gorm.DB) *ProjectStore {
 			"Meets",
 			"Meets.Channel",
 			"Guides",
-			"Guides.User",
+			"Guides.Account",
 			"Subjects",
 			"Progress",
 			"Commits",
@@ -36,72 +37,84 @@ func NewProjectStore(db *gorm.DB) *ProjectStore {
 	)
 	commit := services.NewCrudService(
 		&models.Commit{},
+		models.Commit{},
 		"project:commit",
 		[]string{},
 		db,
 	)
 	meet := services.NewCrudService(
 		&models.Meet{},
+		models.Meet{},
 		"project:meet",
 		[]string{"Channel"},
 		db,
 	)
 	milestone := services.NewCrudService(
 		&models.Milestone{},
+		models.Milestone{},
 		"project:milestone",
 		[]string{},
 		db,
 	)
 	subject := services.NewCrudService(
 		&models.Subject{},
+		models.Subject{},
 		"project:subject",
 		[]string{},
 		db,
 	)
 	progress := services.NewCrudService(
 		&models.Progress{},
+		models.Progress{},
 		"project:progress",
 		[]string{},
 		db,
 	)
 	channel := services.NewCrudService(
 		&models.Channel{},
+		models.Channel{},
 		"project:channel",
 		[]string{},
 		db,
 	)
 	link := services.NewCrudService(
 		&models.Link{},
+		models.Link{},
 		"project:link",
 		[]string{"LinkType"},
 		db,
 	)
 	linktype := services.NewCrudService(
 		&models.LinkType{},
+		models.LinkType{},
 		"project:linktype",
 		[]string{},
 		db,
 	)
 	rubric := services.NewCrudService(
 		&models.Rubric{},
+		models.Rubric{},
 		"project:rubric",
 		[]string{"Reviews"},
 		db,
 	)
 	review := services.NewCrudService(
 		&models.Review{},
+		models.Review{},
 		"project:review",
-		[]string{"Rubric", "Reviewer", "Reviewer.User"},
+		[]string{"Rubric", "Reviewer", "Reviewer.Account"},
 		db,
 	)
 	ptype := services.NewCrudService(
 		&models.ProjectType{},
+		models.ProjectType{},
 		"project:type",
 		[]string{},
 		db,
 	)
 	pstate := services.NewCrudService(
 		&models.ProjectState{},
+		models.ProjectState{},
 		"project:state",
 		[]string{},
 		db,
@@ -122,7 +135,7 @@ func NewProjectStore(db *gorm.DB) *ProjectStore {
 		services.NewCRUDHandler("pstate", pstate),
 	}
 	return &ProjectStore{
-		Project: project,
+		Project: services.NewProjectHandler(db, project),
 		Related: related,
 		db:      db,
 	}
