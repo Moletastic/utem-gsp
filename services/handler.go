@@ -47,8 +47,7 @@ func (crud *CRUDHandler) decodeReq(c echo.Context, req *CRUDReq, data interface{
 	if err != nil {
 		return nil
 	}
-	err = d.Decode(req.Data)
-	if err != nil {
+	if err = d.Decode(req.Data); err != nil {
 		return err
 	}
 	return nil
@@ -64,18 +63,14 @@ func (crud *CRUDHandler) decodeListReq(c echo.Context, req *ListReq) error {
 func (crud *CRUDHandler) Create(c echo.Context) error {
 	req := new(CRUDReq)
 	obj := crud.Service.GetNew()
-	err := crud.decodeReq(c, req, &obj)
-	if err != nil {
+	if err := crud.decodeReq(c, req, &obj); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
 	obj.InitGSP(crud.Service.EntityName)
-	err = crud.Service.Create(obj)
-	if err != nil {
+	if err := crud.Service.Create(obj); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	c.Logger().Info("hola")
-	err = crud.Service.GetByID(obj, obj.GetID())
-	if err != nil {
+	if err := crud.Service.GetByID(obj, obj.GetID()); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
 	return c.JSON(http.StatusOK, obj)
@@ -89,17 +84,14 @@ func (crud *CRUDHandler) Update(c echo.Context) error {
 	}
 	id := int64(p)
 	obj := crud.Service.GetNew()
-	err = crud.decodeReq(c, req, &obj)
-	if err != nil {
+	if err = crud.decodeReq(c, req, &obj); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
 	obj.InitGSP(crud.Service.EntityName)
-	err = crud.Service.Update(obj, id)
-	if err != nil {
+	if err = crud.Service.Update(obj, id); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	err = crud.Service.GetByID(obj, id)
-	if err != nil {
+	if err = crud.Service.GetByID(obj, id); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
 	return c.JSON(http.StatusOK, obj)
@@ -113,12 +105,10 @@ func (crud *CRUDHandler) Delete(c echo.Context) error {
 	}
 	id := int64(p)
 	obj := crud.Service.GetNew()
-	err = crud.decodeReq(c, req, &obj)
-	if err != nil {
+	if err = crud.decodeReq(c, req, &obj); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
-	err = crud.Service.Delete(obj, id)
-	if err != nil {
+	if err = crud.Service.Delete(obj, id); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
 	return c.JSON(http.StatusOK, id)
@@ -131,8 +121,7 @@ func (crud *CRUDHandler) GetByID(c echo.Context) error {
 	}
 	id := int64(p)
 	obj := crud.Service.GetNew()
-	err = crud.Service.GetByID(obj, id)
-	if err != nil {
+	if err = crud.Service.GetByID(obj, id); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, utils.NewError(err))
 	}
 	return c.JSON(http.StatusOK, obj)

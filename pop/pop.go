@@ -19,49 +19,49 @@ func Populate(d *gorm.DB) error {
 	}
 	es.Related[1].Service.Create(&department)
 	careers, _ := generateCareers(es.Related[0].Service, department)
-	students, err := generateStudents(es.Related[2].Service, careers)
+	_, err := generateStudents(es.Related[2].Service, careers)
 	if err != nil {
 		return err
 	}
-	teachers, err := generateTeachers(ac.Related[0].Service)
+	_, err = generateTeachers(ac.Related[0].Service)
 	if err != nil {
 		return err
 	}
-	subjects, err := generateSubjects(pro.Related[4].Service)
+	_, err = generateSubjects(pro.Related[4].Service)
 	if err != nil {
 		return err
 	}
-	states, err := generateProjectStates(pro.Related[12].Service)
+	_, err = generateProjectStates(pro.Related[12].Service)
 	if err != nil {
 		return err
 	}
-	types, err := generateProjectTypes(pro.Related[11].Service)
+	_, err = generateProjectTypes(pro.Related[11].Service)
 	if err != nil {
 		return err
 	}
-	ltypes, err := generateLinkTypes(pro.Related[8].Service)
+	_, err = generateLinkTypes(pro.Related[8].Service)
 	if err != nil {
 		return err
 	}
-	chs, err := generateChannels(pro.Related[6].Service)
-	projects, err := generateProjects(pro.Related[0].Service, students, teachers, subjects, types, states)
+	_, err = generateChannels(pro.Related[6].Service)
+	//projects, err := generateProjects(pro.Related[0].Service, students, teachers, subjects, types, states)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//return err
+	//}
 
-	rubrics, err := generateRubric(pro.Related[9].Service)
+	//rubrics, err := generateRubric(pro.Related[9].Service)
 
-	if err != nil {
-		return err
-	}
+	//if err != nil {
+	//return err
+	//}
 
-	for _, project := range projects {
-		err = fillProject(pro.Related[0].Service, &project, rubrics, chs, ltypes)
-		if err != nil {
-			return err
-		}
-	}
+	//for _, project := range projects {
+	//err = fillProject(pro.Related[0].Service, &project, rubrics, chs, ltypes)
+	//if err != nil {
+	//return err
+	//}
+	//}
 
 	_, err = generateAdmins(ac.Related[1].Service)
 
@@ -1006,8 +1006,8 @@ func generateRubric(s *services.CRUDService) ([]models.Rubric, error) {
 
 func fillProject(s *services.CRUDService, p *models.Project, rubrics []models.Rubric, channels []models.Channel, ltypes []models.LinkType) error {
 	rws := []models.Review{
-		models.NewReview("Evaluación 1", rubrics[0].ID, p.ID, "https://drive.google.com/file/d/1KsNk_F7mMMFta6pPXfKFy4uDKpg8kevj/view?usp=sharing", p.Guides[0].ID, "5.4"),
-		models.NewReview("Evaluación 2", rubrics[1].ID, p.ID, "https://drive.google.com/file/d/1clFlVTyikx10x_5q3zSANIwgqM3LE7I0/view?usp=sharing", p.Guides[0].ID, "5.5"),
+		models.NewReview("Evaluación 1", rubrics[0].ID, p.ID, "https://drive.google.com/file/d/1KsNk_F7mMMFta6pPXfKFy4uDKpg8kevj/view?usp=sharing", p.Guides[0].ID, 5.4),
+		models.NewReview("Evaluación 2", rubrics[1].ID, p.ID, "https://drive.google.com/file/d/1clFlVTyikx10x_5q3zSANIwgqM3LE7I0/view?usp=sharing", p.Guides[0].ID, 5.5),
 	}
 	p.Reviews = rws
 	chindex := rand.Intn(len(channels))

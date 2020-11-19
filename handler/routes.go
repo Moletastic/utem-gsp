@@ -20,7 +20,10 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	restricted := v1.Group("/gsp")
 	restricted.Use(middleware.JWTWithConfig(config))
-	restricted.POST("/account/me", h.Me)
+	restricted.GET("/account/me", h.Me)
+	restricted.PUT("/account/me", h.UpdateAccount)
+	restricted.PUT("/account/password", h.ChangePassword)
+	restricted.POST("/account/user", h.CreateUser)
 	for _, handler := range h.AccStore.Related {
 		uri := fmt.Sprintf("/%s", handler.Name)
 		uriID := fmt.Sprintf("/%s/:id", handler.Name)
@@ -56,7 +59,8 @@ func (h *Handler) Register(v1 *echo.Group) {
 	uriID := fmt.Sprintf("/%s/:id", "project")
 	restricted.GET(uri, h.ProStore.Project.List)
 	restricted.GET(uriID, h.ProStore.Related[0].GetByID)
-	restricted.POST(uri, h.ProStore.Related[0].Create)
-	restricted.PUT(uriID, h.ProStore.Related[0].Update)
+	restricted.POST(uri, h.ProStore.Project.Create)
+	restricted.PUT(uriID, h.ProStore.Project.Update)
 	restricted.DELETE(uriID, h.ProStore.Related[0].Delete)
+	restricted.PATCH(uriID, h.ProStore.Project.Patch)
 }

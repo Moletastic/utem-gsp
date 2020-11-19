@@ -30,7 +30,7 @@ func NewEducationStore(db *gorm.DB) *EducationStore {
 		&models.Student{},
 		models.Student{},
 		"edu:student",
-		[]string{},
+		[]string{"Career"},
 		db,
 	)
 	related := []*services.CRUDHandler{

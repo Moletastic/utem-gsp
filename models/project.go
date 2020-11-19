@@ -106,13 +106,13 @@ func NewChannel(n string, i string, online bool) Channel {
 
 type Meet struct {
 	GSPModel
-	Name      string    `mapstructure:"name" json:"name"`
-	Date      time.Time `mapstructure:"date" json:"date"`
-	ChannelID int64     `mapstructure:"channel_id" json:"channel_id"`
-	Channel   *Channel  `mapstructure:"channel" json:"channel"`
-	Done      bool      `mapstructure:"done" json:"done"`
-	Project   Project   `mapstructure:"project" json:"project"`
-	ProjectID int64     `mapstructure:"project_id" json:"project_id"`
+	Name      string     `mapstructure:"name" json:"name"`
+	Date      *time.Time `mapstructure:"date" json:"date"`
+	ChannelID int64      `mapstructure:"channel_id" json:"channel_id"`
+	Channel   *Channel   `mapstructure:"channel" json:"channel"`
+	Done      bool       `mapstructure:"done" json:"done"`
+	Project   Project    `mapstructure:"project" json:"project"`
+	ProjectID int64      `mapstructure:"project_id" json:"project_id"`
 }
 
 func (m Meet) Bind(v interface{}) {
@@ -126,7 +126,7 @@ func (m Meet) New() Model {
 func NewMeet(n string, d time.Time, chid int64, pid int64) Meet {
 	m := Meet{
 		Name:      n,
-		Date:      d,
+		Date:      &d,
 		ChannelID: chid,
 		ProjectID: pid,
 	}
@@ -137,7 +137,7 @@ func NewMeet(n string, d time.Time, chid int64, pid int64) Meet {
 type Commit struct {
 	GSPModel
 	Title     string     `json:"title" mapstructure:"title"`
-	Desc      string     `json:"desc" mapstructure:"desc"`
+	Desc      string     `gorm:"type:text" json:"desc" mapstructure:"desc"`
 	Solved    bool       `json:"solved" mapstructure:"solved"`
 	SolvedAt  *time.Time `json:"solved_at,omitempty" mapstructure:"solved_at"`
 	LimitDate *time.Time `json:"limit_date" mapstructure:"limit_date"`
@@ -166,13 +166,13 @@ func NewCommit(t string, limit time.Time, pid int64) Commit {
 // Milestone ...
 type Milestone struct {
 	GSPModel
-	Title     string    `json:"title" mapstructure:"title"`
-	Desc      string    `json:"desc" mapstructure:"desc"`
-	FileURL   string    `json:"file_url" mapstructure:"file_url"`
-	Solved    bool      `json:"solved" mapstructure:"solved"`
-	Date      time.Time `json:"date" mapstructure:"date"`
-	Project   Project   `json:"project" mapstructure:"project"`
-	ProjectID int64     `json:"project_id" mapstructure:"project_id"`
+	Title     string     `json:"title" mapstructure:"title"`
+	Desc      string     `gorm:"type:text" json:"desc" mapstructure:"desc"`
+	FileURL   string     `json:"file_url" mapstructure:"file_url"`
+	Solved    bool       `json:"solved" mapstructure:"solved"`
+	Date      *time.Time `json:"date" mapstructure:"date"`
+	Project   Project    `json:"project" mapstructure:"project"`
+	ProjectID int64      `json:"project_id" mapstructure:"project_id"`
 }
 
 func (m Milestone) Bind(v interface{}) {
@@ -186,7 +186,7 @@ func (m Milestone) New() Model {
 func NewMilestone(t string, d time.Time, pid int64) Milestone {
 	m := Milestone{
 		Title:     t,
-		Date:      d,
+		Date:      &d,
 		ProjectID: pid,
 	}
 	m.InitGSP("project:milestone")
@@ -219,7 +219,8 @@ func NewProgress(n string, pid int64) Progress {
 
 type ProjectState struct {
 	GSPModel
-	Name string `json:"name" mapstructure:"name"`
+	Name     string    `json:"name" mapstructure:"name"`
+	Projects []Project `json:"projects" mapstructure:"projects"`
 }
 
 func (s ProjectState) Bind(v interface{}) {
@@ -286,16 +287,16 @@ func NewRubric(n string, url string) Rubric {
 
 type Review struct {
 	GSPModel
-	Name      string  `mapstructure:"name" json:"name"`
-	RubricID  int64   `json:"rubric_id" mapstructure:"rubric_id"`
-	Rubric    Rubric  `mapstructure:"rubric" json:"rubric"`
-	Project   Project `json:"project" mapstructure:"project"`
-	ProjectID int64   `json:"project_id" mapstructure:"project_id"`
-	FileURL   string  `mapstructure:"file_url" json:"file_url"`
-	// JSON String
-	Score      string  `mapstructure:"score" json:"score"`
-	ReviewerID int64   `json:"reviewer_id" mapstructure:"reviewer_id"`
-	Reviewer   Teacher `mapstructure:"reviewer" json:"reviewer"`
+	Name       string   `mapstructure:"name" json:"name"`
+	RubricID   int64    `json:"rubric_id" mapstructure:"rubric_id"`
+	Rubric     Rubric   `mapstructure:"rubric" json:"rubric"`
+	Project    Project  `json:"project" mapstructure:"project"`
+	ProjectID  int64    `json:"project_id" mapstructure:"project_id"`
+	FileURL    string   `mapstructure:"file_url" json:"file_url"`
+	Score      *float32 `json:"score" mapstructure:"score"`
+	ReviewerID int64    `json:"reviewer_id" mapstructure:"reviewer_id"`
+	Reviewer   Teacher  `mapstructure:"reviewer" json:"reviewer"`
+	Comment    string   `json:"comment" mapstructure:"comment"`
 }
 
 func (r Review) New() Model {
@@ -306,14 +307,14 @@ func (r Review) Bind(v interface{}) {
 	v = Review{}
 }
 
-func NewReview(n string, rid int64, pid int64, url string, rvid int64, score string) Review {
+func NewReview(n string, rid int64, pid int64, url string, rvid int64, score float32) Review {
 	r := Review{
 		Name:       n,
 		RubricID:   rid,
 		ProjectID:  pid,
 		FileURL:    url,
 		ReviewerID: rvid,
-		Score:      score,
+		Score:      &score,
 	}
 	r.InitGSP("project:review")
 	return r
@@ -321,12 +322,12 @@ func NewReview(n string, rid int64, pid int64, url string, rvid int64, score str
 
 type Project struct {
 	GSPModel
-	ProjectState   ProjectState `gorm:"foreignKey:ProjectStateID" json:"project_state" mapstructure:"project_state"`
-	ProjectStateID int64        `gorm:"column:project_state_id" json:"project_state_id,omitempty" mapstructure:"project_state_id"`
+	ProjectState   ProjectState `json:"project_state" mapstructure:"project_state"`
+	ProjectStateID int64        `json:"project_state_id,omitempty" mapstructure:"project_state_id"`
 	Title          string       `json:"title" mapstructure:"title"`
 	ProjectTypeID  int64        `json:"project_type_id" mapstructure:"project_type_id"`
 	ProjectType    ProjectType  `json:"project_type" mapstructure:"project_type"`
-	Desc           string       `json:"desc" mapstructure:"desc"`
+	Desc           string       `gorm:"type:text" json:"desc" mapstructure:"desc"`
 	Authors        []Student    `gorm:"many2many:project_authors;" json:"authors" mapstructure:"authors"`
 	Guides         []Teacher    `gorm:"many2many:project_guides" json:"guides" mapstructure:"guides"`
 	Links          []Link       `json:"links" mapstructure:"links"`
